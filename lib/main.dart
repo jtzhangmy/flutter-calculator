@@ -13,15 +13,19 @@ class Calculator extends StatefulWidget {
 }
 
 class _CalculatorState extends State<Calculator> {
-  String _num = '0';
-  String _prevNum = '';
+  var _list = <String>['0'];
+  String _numShow = '0';
   String _prevBtn = '';
-  String _prevSymblo = '';
 
   void _input(arg) {
+    final lastIndex = _list.length - 1;
+    final len = _list.length;
+    var storageList = _list;
+    String numAfter = '';
+
     print(' ');
-    print('num: $_num prevNum: $_prevNum arg: $arg prevBtn: $_prevBtn');
-    if (_num == '0' &&
+    print('------------------------------------------');
+    if (_list[0] == '0' &&
         arg != 'C' &&
         arg != 'AC' &&
         arg != '.' &&
@@ -31,64 +35,123 @@ class _CalculatorState extends State<Calculator> {
         arg != '/' &&
         arg != '+/-' &&
         arg != '%') {
+      numAfter = arg;
+      storageList[lastIndex] = numAfter;
       setState(() {
-        _num = arg;
+        _list = storageList;
+        _numShow = numAfter;
       });
     } else if (arg == 'C') {
       setState(() {
-        _num = '0';
-        _prevBtn = '';
+        _list = ['0'];
+        _numShow = '0';
       });
     } else if (arg == 'AC') {
       setState(() {
-        _num = '0';
-        _prevNum = '';
+        _list = ['0'];
+        _numShow = '0';
         _prevBtn = '';
       });
     } else if (arg == '%') {
+      numAfter = _numShow == '0' ? '0' : (double.parse(_numShow) / 100).toString();
+      if (_prevBtn != '') {
+        storageList[lastIndex - 1] = numAfter;
+        storageList.removeLast();
+      } else {
+        storageList[lastIndex] = numAfter;
+      }
       setState(() {
-        _num = _num == '0' ? '0' : (double.parse(_num) / 100).toString();
+        _list = storageList;
+        _numShow = numAfter;
+        _prevBtn = '';
       });
     } else if (arg == '+/-') {
+      numAfter = _numShow == '0' ? '0' : (double.parse(_numShow) * -1).toString();
+      storageList[lastIndex] = numAfter;
       setState(() {
-        _num = _num == '0' ? '0' : (double.parse(_num) * -1).toString();
+        _list = storageList;
+        _numShow = numAfter;
+        _prevBtn = '';
       });
     } else if (arg == '.') {
-      if (!_num.contains('.')) {
+      if (!_numShow.contains('.')) {
+        storageList[lastIndex] = _numShow + '.';
         setState(() {
-          _num += arg;
+          _list = storageList;
+          _numShow += arg;
         });
       }
     } else if (arg == '+' || arg == '-' || arg == 'x' || arg == '/') {
-      print('_prevBtn: $_prevBtn _prevSymblo: $_prevSymblo');
-      String _nextNum = _equal(_prevNum, _prevSymblo, _num);
-      print('equal $_nextNum');
-      setState(() {
-        _prevBtn = arg;
-        _prevNum = _num;
-        _num = _nextNum;
-        _prevSymblo = arg;
-      });
-    } else if (arg == '=') {
-      String _nextNum = _equal(_prevNum, _prevSymblo, _num);
-      setState(() {
-        _prevNum = _num;
-        _num = _nextNum;
-      });
-    } else {
-      if (_prevBtn != '') {
+      print('长度： $len');
+      if (_prevBtn != '') { // 之前按过符号
+        print(111);
+        storageList.add(arg);
         setState(() {
-          _prevNum = _num;
-          _prevBtn = '';
-          _num = arg;
+          _list = storageList;
         });
       } else {
+        if (_list.length == 3) {
+          // 先算乘除后算加减
+          if ((arg == 'x' || arg == '/') && (storageList[1] == '+' || storageList[1] == '-')){
+            print(222);
+            storageList.add(arg);
+            setState(() {
+              _list = storageList;
+              _prevBtn = arg;
+            });
+          } else {
+            print(333);
+            numAfter = _equal(storageList[0], storageList[1], storageList[2]);
+            storageList.removeRange(0, 2);
+            storageList = [numAfter, arg];
+            setState(() {
+              _list = storageList;
+              _numShow = numAfter;
+              _prevBtn = arg;
+            });
+          }
+        } else if (_list.length == 5) {
+          numAfter = _equal(storageList[0], storageList[1], _equal(storageList[2], storageList[3], storageList[4]));
+          storageList.removeRange(0, 4);
+          storageList[0] = numAfter;
+          storageList = [numAfter, arg];
+          setState(() {
+            _list = storageList;
+            _numShow = numAfter;
+            _prevBtn = arg;
+          });
+        } else {
+          print('555 ');
+          storageList.add(arg);
+          setState(() {
+            _list = storageList;
+            _prevBtn = arg;
+          });
+        }
+      }
+
+    } else if (arg == '=') {
+
+    } else {
+      if (_prevBtn != '') {
+        storageList.add(arg);
+        numAfter = arg;
         setState(() {
-          _num += arg;
+          _list = storageList;
+          _numShow = numAfter;
+          _prevBtn = '';
+        });
+      } else {
+        numAfter = _numShow + arg;
+        storageList[lastIndex] = numAfter;
+        setState(() {
+          _numShow = numAfter;
+          _list = storageList;
           _prevBtn = '';
         });
       }
     }
+    print(_list);
   }
 
   String _add(String num1, String num2) =>
@@ -104,7 +167,7 @@ class _CalculatorState extends State<Calculator> {
       num1 == '' ? num2 : (double.parse(num1) / double.parse(num2)).toString();
 
   String _equal(String num1, String symbol, String num2) {
-    print('zzzzzzz $symbol');
+    print('---- 符号 $symbol -----');
     switch (symbol) {
       case '+':
         return _add(num1, num2);
@@ -133,7 +196,7 @@ class _CalculatorState extends State<Calculator> {
               children: <Widget>[
                 new Container(
                   child: new Text(
-                    '$_num',
+                    '$_numShow',
                     style: new TextStyle(
 //                      color: Colors.white,
                         fontSize: 24),
@@ -149,7 +212,7 @@ class _CalculatorState extends State<Calculator> {
                     children: <Widget>[
                       new Row(
                         children: <Widget>[
-                          this._button(_num == '0' ? 'AC' : 'C'),
+                          this._button(_numShow == '0' ? 'AC' : 'C'),
                           this._button('+/-'),
                           this._button('%'),
                           this._button('/')
