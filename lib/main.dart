@@ -25,7 +25,7 @@ class _CalculatorState extends State<Calculator> {
 
     print(' ');
     print('------------------------------------------');
-    if (_list[0] == '0' &&
+    if (_list[lastIndex] == '0' &&
         arg != 'C' &&
         arg != 'AC' &&
         arg != '.' &&
@@ -43,7 +43,8 @@ class _CalculatorState extends State<Calculator> {
       });
     } else if (arg == 'C') {
       setState(() {
-        _list = ['0'];
+        storageList[lastIndex] = '0';
+        _list = storageList;
         _numShow = '0';
       });
     } else if (arg == 'AC') {
@@ -85,9 +86,10 @@ class _CalculatorState extends State<Calculator> {
       print('长度： $len');
       if (_prevBtn != '') { // 之前按过符号
         print(111);
-        storageList.add(arg);
+        storageList[lastIndex] = arg;
         setState(() {
           _list = storageList;
+          _prevBtn = arg;
         });
       } else {
         if (_list.length == 3) {
@@ -111,15 +113,25 @@ class _CalculatorState extends State<Calculator> {
             });
           }
         } else if (_list.length == 5) {
-          numAfter = _equal(storageList[0], storageList[1], _equal(storageList[2], storageList[3], storageList[4]));
-          storageList.removeRange(0, 4);
-          storageList[0] = numAfter;
-          storageList = [numAfter, arg];
-          setState(() {
-            _list = storageList;
-            _numShow = numAfter;
-            _prevBtn = arg;
-          });
+          if (arg == 'x' || arg == '/') {
+            numAfter = _equal(storageList[2], storageList[3], storageList[4]);
+            storageList = [storageList[0], storageList[1], numAfter, arg];
+            setState(() {
+              _list = storageList;
+              _numShow = numAfter;
+              _prevBtn = arg;
+            });
+          } else {
+            numAfter = _equal(storageList[0], storageList[1], _equal(storageList[2], storageList[3], storageList[4]));
+            storageList.removeRange(0, 4);
+            storageList[0] = numAfter;
+            storageList = [numAfter, arg];
+            setState(() {
+              _list = storageList;
+              _numShow = numAfter;
+              _prevBtn = arg;
+            });
+          }
         } else {
           print('555 ');
           storageList.add(arg);
@@ -131,7 +143,30 @@ class _CalculatorState extends State<Calculator> {
       }
 
     } else if (arg == '=') {
-
+      if (_list.length == 3) {
+        // 先算乘除后算加减
+        numAfter = _equal(storageList[0], storageList[1], storageList[2]);
+        storageList.removeRange(0, 2);
+        storageList = [numAfter, arg];
+        setState(() {
+          _list = storageList;
+          _numShow = numAfter;
+        });
+      } else if (_list.length == 5) {
+        numAfter = _equal(storageList[0], storageList[1], _equal(storageList[2], storageList[3], storageList[4]));
+        storageList.removeRange(0, 4);
+        storageList[0] = numAfter;
+        storageList = [numAfter, arg];
+        setState(() {
+          _list = storageList;
+          _numShow = numAfter;
+        });
+      } else {
+        print('555 ');
+        setState(() {
+          _list = storageList;
+        });
+      }
     } else {
       if (_prevBtn != '') {
         storageList.add(arg);
