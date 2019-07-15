@@ -34,6 +34,7 @@ class _CalculatorState extends State<Calculator> {
         arg != 'x' &&
         arg != '/' &&
         arg != '+/-' &&
+        arg != '=' &&
         arg != '%') {
       numAfter = arg;
       storageList[lastIndex] = numAfter;
@@ -54,7 +55,8 @@ class _CalculatorState extends State<Calculator> {
         _prevBtn = '';
       });
     } else if (arg == '%') {
-      numAfter = _numShow == '0' ? '0' : (double.parse(_numShow) / 100).toString();
+      numAfter =
+          _numShow == '0' ? '0' : (double.parse(_numShow) / 100).toString();
       if (_prevBtn != '') {
         storageList[lastIndex - 1] = numAfter;
         storageList.removeLast();
@@ -67,7 +69,8 @@ class _CalculatorState extends State<Calculator> {
         _prevBtn = '';
       });
     } else if (arg == '+/-') {
-      numAfter = _numShow == '0' ? '0' : (double.parse(_numShow) * -1).toString();
+      numAfter =
+          _numShow == '0' ? '0' : (double.parse(_numShow) * -1).toString();
       storageList[lastIndex] = numAfter;
       setState(() {
         _list = storageList;
@@ -84,8 +87,8 @@ class _CalculatorState extends State<Calculator> {
       }
     } else if (arg == '+' || arg == '-' || arg == 'x' || arg == '/') {
       print('长度： $len');
-      if (_prevBtn != '') { // 之前按过符号
-        print(111);
+      if (_prevBtn != '' || storageList[lastIndex] == '=') {
+        // 之前按过符号
         storageList[lastIndex] = arg;
         setState(() {
           _list = storageList;
@@ -94,15 +97,14 @@ class _CalculatorState extends State<Calculator> {
       } else {
         if (_list.length == 3) {
           // 先算乘除后算加减
-          if ((arg == 'x' || arg == '/') && (storageList[1] == '+' || storageList[1] == '-')){
-            print(222);
+          if ((arg == 'x' || arg == '/') &&
+              (storageList[1] == '+' || storageList[1] == '-')) {
             storageList.add(arg);
             setState(() {
               _list = storageList;
               _prevBtn = arg;
             });
           } else {
-            print(333);
             numAfter = _equal(storageList[0], storageList[1], storageList[2]);
             storageList.removeRange(0, 2);
             storageList = [numAfter, arg];
@@ -122,7 +124,8 @@ class _CalculatorState extends State<Calculator> {
               _prevBtn = arg;
             });
           } else {
-            numAfter = _equal(storageList[0], storageList[1], _equal(storageList[2], storageList[3], storageList[4]));
+            numAfter = _equal(storageList[0], storageList[1],
+                _equal(storageList[2], storageList[3], storageList[4]));
             storageList.removeRange(0, 4);
             storageList[0] = numAfter;
             storageList = [numAfter, arg];
@@ -133,7 +136,6 @@ class _CalculatorState extends State<Calculator> {
             });
           }
         } else {
-          print('555 ');
           storageList.add(arg);
           setState(() {
             _list = storageList;
@@ -141,30 +143,31 @@ class _CalculatorState extends State<Calculator> {
           });
         }
       }
-
     } else if (arg == '=') {
       if (_list.length == 3) {
-        // 先算乘除后算加减
         numAfter = _equal(storageList[0], storageList[1], storageList[2]);
         storageList.removeRange(0, 2);
         storageList = [numAfter, arg];
         setState(() {
           _list = storageList;
           _numShow = numAfter;
+          _prevBtn = '';
         });
       } else if (_list.length == 5) {
-        numAfter = _equal(storageList[0], storageList[1], _equal(storageList[2], storageList[3], storageList[4]));
+        numAfter = _equal(storageList[0], storageList[1],
+            _equal(storageList[2], storageList[3], storageList[4]));
         storageList.removeRange(0, 4);
         storageList[0] = numAfter;
         storageList = [numAfter, arg];
         setState(() {
           _list = storageList;
           _numShow = numAfter;
+          _prevBtn = '';
         });
       } else {
-        print('555 ');
         setState(() {
           _list = storageList;
+          _prevBtn = '';
         });
       }
     } else {
@@ -177,8 +180,15 @@ class _CalculatorState extends State<Calculator> {
           _prevBtn = '';
         });
       } else {
-        numAfter = _numShow + arg;
-        storageList[lastIndex] = numAfter;
+        print(999);
+        print(storageList[lastIndex]);
+        if (storageList[lastIndex] == '=') {
+          numAfter = arg;
+          storageList = [arg];
+        } else {
+          numAfter = _numShow + arg;
+          storageList[lastIndex] = numAfter;
+        }
         setState(() {
           _numShow = numAfter;
           _list = storageList;
@@ -203,19 +213,25 @@ class _CalculatorState extends State<Calculator> {
 
   String _equal(String num1, String symbol, String num2) {
     print('---- 符号 $symbol -----');
+    String num;
     switch (symbol) {
       case '+':
-        return _add(num1, num2);
+        num = _add(num1, num2);
         break;
       case '-':
-        return _minus(num1, num2);
+        num = _minus(num1, num2);
+        break;
       case 'x':
-        return _mult(num1, num2);
+        num = _mult(num1, num2);
+        break;
       case '/':
-        return _division(num1, num2);
+        num = _division(num1, num2);
+        break;
       case '':
-        return num2;
+        num = num2;
+        break;
     }
+    return num;
   }
 
   @override
@@ -234,47 +250,46 @@ class _CalculatorState extends State<Calculator> {
                     '$_numShow',
                     style: new TextStyle(
 //                      color: Colors.white,
-                        fontSize: 24),
+                        fontSize: 28,
+                        color: Colors.white),
                   ),
                   width: 375,
                   height: 150,
                   padding: new EdgeInsets.all(20),
-                  decoration: new BoxDecoration(
-                      border: new Border.all(color: Colors.blue, width: 1)),
                 ),
                 new Container(
                   child: new Column(
                     children: <Widget>[
                       new Row(
                         children: <Widget>[
-                          this._button(_numShow == '0' ? 'AC' : 'C'),
-                          this._button('+/-'),
-                          this._button('%'),
-                          this._button('/')
+                          this._button(_numShow == '0' ? 'AC' : 'C', false, true),
+                          this._button('+/-', false, true),
+                          this._button('%', false, true),
+                          this._button('/', true, false)
                         ],
                       ),
                       new Row(
                         children: <Widget>[
-                          this._button('7'),
-                          this._button('8'),
-                          this._button('9'),
-                          this._button('x')
+                          this._button('7', false, false),
+                          this._button('8', false, false),
+                          this._button('9', false, false),
+                          this._button('x', true, false)
                         ],
                       ),
                       new Row(
                         children: <Widget>[
-                          this._button('4'),
-                          this._button('5'),
-                          this._button('6'),
-                          this._button('-')
+                          this._button('4', false, false),
+                          this._button('5', false, false),
+                          this._button('6', false, false),
+                          this._button('-', true, false)
                         ],
                       ),
                       new Row(
                         children: <Widget>[
-                          this._button('1'),
-                          this._button('2'),
-                          this._button('3'),
-                          this._button('+')
+                          this._button('1', false, false),
+                          this._button('2', false, false),
+                          this._button('3', false, false),
+                          this._button('+', true, false)
                         ],
                       ),
                       new Row(
@@ -288,10 +303,12 @@ class _CalculatorState extends State<Calculator> {
                                         child: new Center(
                                           child: new Text(
                                             '0',
-                                            style: new TextStyle(fontSize: 24),
+                                            style: new TextStyle(
+                                                fontSize: 24,
+                                                color: Colors.white),
                                           ),
                                         ),
-                                        width: 68,
+                                        width: 38,
                                         height: 68,
                                       ),
                                     ],
@@ -300,13 +317,13 @@ class _CalculatorState extends State<Calculator> {
                                 ),
                                 borderRadius: new BorderRadius.all(
                                     const Radius.circular(40)),
-                                color: Colors.black12),
+                                color: Colors.white24),
                             width: 156,
                             height: 68,
                             margin: new EdgeInsets.all(10),
                           ),
-                          this._button('.'),
-                          this._button('=')
+                          this._button('.', false, false),
+                          this._button('=', true, false)
                         ],
                       ),
                     ],
@@ -317,24 +334,32 @@ class _CalculatorState extends State<Calculator> {
             ),
             width: 375,
             height: 812,
+            color: Colors.black,
           ),
         ));
   }
 
-  Widget _button(arg) {
+   Widget _button(arg, symbol, gray) {
     return new Container(
       child: new Material(
         child: new FlatButton(
           child: new Center(
             child: new Text(
               arg,
-              style: new TextStyle(fontSize: 24),
+              style: new TextStyle(
+                  fontSize: 24,
+                  color: symbol
+                      ? _prevBtn == arg ? Colors.orange : Colors.white
+                      : Colors.white),
             ),
           ),
           onPressed: () => _input(arg),
         ),
         borderRadius: new BorderRadius.all(const Radius.circular(40)),
-        color: _prevBtn == arg ? Colors.redAccent : Colors.black12,
+        color: !gray ? symbol
+            ? _prevBtn == arg ? Colors.white : Colors.orange
+            : Colors.white24
+            : Colors.white54
       ),
       width: 68,
       height: 68,
