@@ -19,7 +19,7 @@ class _CalculatorState extends State<Calculator> {
 
   void _input(arg) {
     final lastIndex = _list.length - 1;
-    final len = _list.length;
+    final listLen = _list.length;
     var storageList = _list;
     String numAfter = '';
 
@@ -86,7 +86,6 @@ class _CalculatorState extends State<Calculator> {
         });
       }
     } else if (arg == '+' || arg == '-' || arg == 'x' || arg == '/') {
-      print('长度： $len');
       if (_prevBtn != '' || storageList[lastIndex] == '=') {
         // 之前按过符号
         storageList[lastIndex] = arg;
@@ -95,7 +94,7 @@ class _CalculatorState extends State<Calculator> {
           _prevBtn = arg;
         });
       } else {
-        if (_list.length == 3) {
+        if (listLen == 3) {
           // 先算乘除后算加减
           if ((arg == 'x' || arg == '/') &&
               (storageList[1] == '+' || storageList[1] == '-')) {
@@ -114,7 +113,7 @@ class _CalculatorState extends State<Calculator> {
               _prevBtn = arg;
             });
           }
-        } else if (_list.length == 5) {
+        } else if (listLen == 5) {
           if (arg == 'x' || arg == '/') {
             numAfter = _equal(storageList[2], storageList[3], storageList[4]);
             storageList = [storageList[0], storageList[1], numAfter, arg];
@@ -144,7 +143,7 @@ class _CalculatorState extends State<Calculator> {
         }
       }
     } else if (arg == '=') {
-      if (_list.length == 3) {
+      if (listLen == 3) {
         numAfter = _equal(storageList[0], storageList[1], storageList[2]);
         storageList.removeRange(0, 2);
         storageList = [numAfter, arg];
@@ -153,7 +152,7 @@ class _CalculatorState extends State<Calculator> {
           _numShow = numAfter;
           _prevBtn = '';
         });
-      } else if (_list.length == 5) {
+      } else if (listLen == 5) {
         numAfter = _equal(storageList[0], storageList[1],
             _equal(storageList[2], storageList[3], storageList[4]));
         storageList.removeRange(0, 4);
