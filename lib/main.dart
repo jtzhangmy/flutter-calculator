@@ -43,11 +43,20 @@ class _CalculatorState extends State<Calculator> {
         _numShow = numAfter;
       });
     } else if (arg == 'C') {
-      setState(() {
-        storageList[lastIndex] = '0';
-        _list = storageList;
-        _numShow = '0';
-      });
+      final lastArg = storageList[lastIndex];
+      if (lastArg == '+' || lastArg == '-' || lastArg == 'x' || lastArg == '/' || lastArg == '=') {
+        storageList[lastIndex - 1] = '0';
+        setState(() {
+          _list = storageList;
+          _numShow = '0';
+        });
+      } else {
+        setState(() {
+          storageList[lastIndex] = '0';
+          _list = storageList;
+          _numShow = '0';
+        });
+      }
     } else if (arg == 'AC') {
       setState(() {
         _list = ['0'];
@@ -87,7 +96,7 @@ class _CalculatorState extends State<Calculator> {
       }
     } else if (arg == '+' || arg == '-' || arg == 'x' || arg == '/') {
       if (_prevBtn != '' || storageList[lastIndex] == '=') {
-        // 之前按过符号
+        // 之前按过符号 除了等号
         storageList[lastIndex] = arg;
         setState(() {
           _list = storageList;
@@ -197,41 +206,42 @@ class _CalculatorState extends State<Calculator> {
     print(_list);
   }
 
+  // 加
   String _add(String num1, String num2) =>
-      num1 == '' ? num2 : (_dot(num1) + _dot(num2)).toString();
+      num1 == '' ? num2 : (_str2num(num1) + _str2num(num2)).toString();
 
+  // 减
   String _minus(String num1, String num2) => num1 == ''
-      ? (-_dot(num2)).toString()
-      : (_dot(num1) - _dot(num2)).toString();
+      ? (-_str2num(num2)).toString()
+      : (_str2num(num1) - _str2num(num2)).toString();
 
+  // 乘
   String _mult(String num1, String num2) =>
-      num1 == '' ? num2 : (_dot(num1) * _dot(num2)).toString();
+      num1 == '' ? num2 : (_str2num(num1) * _str2num(num2)).toString();
+
+  // 除
   String _division(String num1, String num2) =>
-      num1 == '' ? num2 : (_dot(num1) / _dot(num2)).toString();
+      num1 == '' ? num2 : (_str2num(num1) / _str2num(num2)).toString();
 
-  _dot(String num) => num.contains('.') ? double.parse(num) : int.parse(num);
+  // 字符串转数字
+  _str2num(String num) =>
+      num.contains('.') ? double.parse(num) : int.parse(num);
 
+  // 求等
   String _equal(String num1, String symbol, String num2) {
     print('---- 符号 $symbol -----');
-    String num;
     switch (symbol) {
       case '+':
-        num = _add(num1, num2);
-        break;
+        return _add(num1, num2);
       case '-':
-        num = _minus(num1, num2);
-        break;
+        return _minus(num1, num2);
       case 'x':
-        num = _mult(num1, num2);
-        break;
+        return _mult(num1, num2);
       case '/':
-        num = _division(num1, num2);
-        break;
+        return _division(num1, num2);
       case '':
-        num = num2;
-        break;
+        return num2;
     }
-    return num;
   }
 
   @override
@@ -262,7 +272,8 @@ class _CalculatorState extends State<Calculator> {
                     children: <Widget>[
                       new Row(
                         children: <Widget>[
-                          this._button(_numShow == '0' ? 'AC' : 'C', false, true),
+                          this._button(
+                              _numShow == '0' ? 'AC' : 'C', false, true),
                           this._button('+/-', false, true),
                           this._button('%', false, true),
                           this._button('/', true, false)
@@ -339,28 +350,28 @@ class _CalculatorState extends State<Calculator> {
         ));
   }
 
-   Widget _button(arg, symbol, gray) {
+  Widget _button(arg, symbol, gray) {
     return new Container(
       child: new Material(
-        child: new FlatButton(
-          child: new Center(
-            child: new Text(
-              arg,
-              style: new TextStyle(
-                  fontSize: 24,
-                  color: symbol
-                      ? _prevBtn == arg ? Colors.orange : Colors.white
-                      : Colors.white),
+          child: new FlatButton(
+            child: new Center(
+              child: new Text(
+                arg,
+                style: new TextStyle(
+                    fontSize: 24,
+                    color: symbol
+                        ? _prevBtn == arg ? Colors.orange : Colors.white
+                        : Colors.white),
+              ),
             ),
+            onPressed: () => _input(arg),
           ),
-          onPressed: () => _input(arg),
-        ),
-        borderRadius: new BorderRadius.all(const Radius.circular(40)),
-        color: !gray ? symbol
-            ? _prevBtn == arg ? Colors.white : Colors.orange
-            : Colors.white24
-            : Colors.white54
-      ),
+          borderRadius: new BorderRadius.all(const Radius.circular(40)),
+          color: !gray
+              ? symbol
+                  ? _prevBtn == arg ? Colors.white : Colors.orange
+                  : Colors.white24
+              : Colors.white54),
       width: 68,
       height: 68,
       margin: new EdgeInsets.all(10),
