@@ -180,7 +180,6 @@ class _CalculatorState extends State<Calculator> {
           _prevBtn = '';
         });
       } else {
-        print(999);
         print(storageList[lastIndex]);
         if (storageList[lastIndex] == '=') {
           numAfter = arg;
@@ -200,16 +199,18 @@ class _CalculatorState extends State<Calculator> {
   }
 
   String _add(String num1, String num2) =>
-      num1 == '' ? num2 : (double.parse(num1) + double.parse(num2)).toString();
+      num1 == '' ? num2 : (_dot(num1) + _dot(num2)).toString();
 
   String _minus(String num1, String num2) => num1 == ''
-      ? (-double.parse(num2)).toString()
-      : (double.parse(num1) - double.parse(num2)).toString();
+      ? (-_dot(num2)).toString()
+      : (_dot(num1) - _dot(num2)).toString();
 
   String _mult(String num1, String num2) =>
-      num1 == '' ? num2 : (double.parse(num1) * double.parse(num2)).toString();
+      num1 == '' ? num2 : (_dot(num1) * _dot(num2)).toString();
   String _division(String num1, String num2) =>
-      num1 == '' ? num2 : (double.parse(num1) / double.parse(num2)).toString();
+      num1 == '' ? num2 : (_dot(num1) / _dot(num2)).toString();
+
+  _dot(String num) => num.contains('.') ? double.parse(num) : int.parse(num);
 
   String _equal(String num1, String symbol, String num2) {
     print('---- 符号 $symbol -----');
