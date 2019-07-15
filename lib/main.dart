@@ -44,7 +44,11 @@ class _CalculatorState extends State<Calculator> {
       });
     } else if (arg == 'C') {
       final lastArg = storageList[lastIndex];
-      if (lastArg == '+' || lastArg == '-' || lastArg == 'x' || lastArg == '/' || lastArg == '=') {
+      if (lastArg == '+' ||
+          lastArg == '-' ||
+          lastArg == 'x' ||
+          lastArg == '/' ||
+          lastArg == '=') {
         storageList[lastIndex - 1] = '0';
         setState(() {
           _list = storageList;
@@ -207,41 +211,43 @@ class _CalculatorState extends State<Calculator> {
   }
 
   // 加
-  String _add(String num1, String num2) =>
-      num1 == '' ? num2 : (_str2num(num1) + _str2num(num2)).toString();
+  _add(num1, num2) => num1 == '' ? num2 : num1 + num2;
 
   // 减
-  String _minus(String num1, String num2) => num1 == ''
-      ? (-_str2num(num2)).toString()
-      : (_str2num(num1) - _str2num(num2)).toString();
+  _minus(num1, num2) => num1 == '' ? -num2 : num1 - num2;
 
   // 乘
-  String _mult(String num1, String num2) =>
-      num1 == '' ? num2 : (_str2num(num1) * _str2num(num2)).toString();
+  _mult(num1, num2) => num1 == '' ? num2 : num1 * num2;
 
   // 除
-  String _division(String num1, String num2) =>
-      num1 == '' ? num2 : (_str2num(num1) / _str2num(num2)).toString();
+  _division(num1, num2) => num1 == '' ? num2 : num1 / num2;
 
   // 字符串转数字
-  _str2num(String num) =>
-      num.contains('.') ? double.parse(num) : int.parse(num);
+  _str2num(num) => num.contains('.') ? double.parse(num) : int.parse(num);
 
   // 求等
   String _equal(String num1, String symbol, String num2) {
     print('---- 符号 $symbol -----');
+    final _num1 = _str2num(num1);
+    final _num2 = _str2num(num2);
+    var num;
     switch (symbol) {
       case '+':
-        return _add(num1, num2);
+        num = _add(_num1, _num2);
+        break;
       case '-':
-        return _minus(num1, num2);
+        num = _minus(_num1, _num2);
+        break;
       case 'x':
-        return _mult(num1, num2);
+        num = _mult(_num1, _num2);
+        break;
       case '/':
-        return _division(num1, num2);
+        num = _division(_num1, _num2);
+        break;
       case '':
-        return num2;
+        num = _num2;
     }
+    return num.toString();
   }
 
   @override
