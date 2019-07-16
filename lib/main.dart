@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'dart:core';
 
@@ -68,34 +67,40 @@ class _CalculatorState extends State<Calculator> {
         _prevBtn = '';
       });
     } else if (arg == '%') {
-      numAfter =
-          _numShow == '0' ? '0' : (double.parse(_numShow) / 100).toString();
+      numAfter = _numShow == '0' ? '0' : (_str2num(_numShow) / 100).toString();
       if (_prevBtn != '') {
         storageList[lastIndex - 1] = numAfter;
-        storageList.removeLast();
       } else {
         storageList[lastIndex] = numAfter;
       }
       setState(() {
         _list = storageList;
         _numShow = numAfter;
-        _prevBtn = '';
       });
     } else if (arg == '+/-') {
-      numAfter =
-          _numShow == '0' ? '0' : (double.parse(_numShow) * -1).toString();
-      storageList[lastIndex] = numAfter;
+      numAfter = _numShow == '0' ? '0' : (_str2num(_numShow) * -1).toString();
+      if (_prevBtn == '') {
+        storageList[lastIndex] = numAfter;
+      } else {
+        storageList[lastIndex - 1] = numAfter;
+      }
       setState(() {
         _list = storageList;
         _numShow = numAfter;
-        _prevBtn = '';
       });
     } else if (arg == '.') {
       if (!_numShow.contains('.')) {
-        storageList[lastIndex] = _numShow + '.';
+        if (_prevBtn == '') {
+          numAfter = _numShow + arg;
+          storageList[lastIndex] = numAfter;
+        } else {
+          numAfter = '0.';
+          storageList.add(numAfter);
+        }
         setState(() {
           _list = storageList;
-          _numShow += arg;
+          _numShow = numAfter;
+          _prevBtn = '';
         });
       }
     } else if (arg == '+' || arg == '-' || arg == 'x' || arg == '/') {
@@ -155,10 +160,9 @@ class _CalculatorState extends State<Calculator> {
           });
         }
       }
-    } else if (arg == '=') {
+    } else if (arg == '=') { // 等于号
       if (listLen == 3) {
         numAfter = _equal(storageList[0], storageList[1], storageList[2]);
-        storageList.removeRange(0, 2);
         storageList = [numAfter, arg];
         setState(() {
           _list = storageList;
@@ -182,7 +186,10 @@ class _CalculatorState extends State<Calculator> {
           _prevBtn = '';
         });
       }
-    } else {
+    } else { // 普通数字
+      // 超位数
+      if (storageList[lastIndex].length >= 9) return;
+      // 前一个点击+-x/符号
       if (_prevBtn != '') {
         storageList.add(arg);
         numAfter = arg;
@@ -192,7 +199,6 @@ class _CalculatorState extends State<Calculator> {
           _prevBtn = '';
         });
       } else {
-        print(storageList[lastIndex]);
         if (storageList[lastIndex] == '=') {
           numAfter = arg;
           storageList = [arg];
@@ -228,26 +234,69 @@ class _CalculatorState extends State<Calculator> {
   // 求等
   String _equal(String num1, String symbol, String num2) {
     print('---- 符号 $symbol -----');
-    final _num1 = _str2num(num1);
-    final _num2 = _str2num(num2);
-    var num;
-    switch (symbol) {
-      case '+':
-        num = _add(_num1, _num2);
-        break;
-      case '-':
-        num = _minus(_num1, _num2);
-        break;
-      case 'x':
-        num = _mult(_num1, _num2);
-        break;
-      case '/':
-        num = _division(_num1, _num2);
-        break;
-      case '':
-        num = _num2;
+    final _num1 = _str2num(_transE(num1));
+    final _num2 = _str2num(_transE(num2));
+    print(_num1);
+    print(_num2);
+    var obj = {
+      '+': _add(_num1, _num2),
+      '-': _minus(_num1, _num2),
+      'x': _mult(_num1, _num2),
+      '/': _division(_num1, _num2),
+      '': _num2,
+    };
+    var num = obj[symbol];
+    // 判断是否为无穷
+    if (num.isInfinite) {
+      return '输入错误';
     }
-    return num.toString();
+
+    // 判断无限循环小数
+    if (!num.isFinite) {
+      return num.toStringAsFixed(9).toString();
+    }
+
+    // 超范围
+    var numStr = num.toString();
+    final numStrLen = numStr.length;
+    print(numStr);
+    if (numStrLen > 11) {
+      if (numStr.contains('.')) {
+        return _str2num(numStr.substring(0, 11)).toString();
+      } else {
+        final sub3 = (_str2num(numStr.substring(0, 3)) / 100).toString();
+        return  sub3 + 'e+${numStrLen-1}';
+      }
+    } else {
+      return numStr;
+    }
+  }
+
+  // 分隔符
+  _splitStr(str) {
+    if (str.contains('.')) {
+      return str;
+    } else {
+      final strLen = str.length;
+      if (strLen > 3 && strLen < 7) {
+        return str.substring(0, strLen - 3) + ',' + str.substring(strLen - 3, strLen);
+      } else if (strLen > 6 && strLen < 10) {
+        return str.substring(0, strLen - 6) + ',' + str.substring(strLen - 6, strLen - 3) + ',' + str.substring(strLen - 3, strLen);
+      } else {
+        return str;
+      }
+    }
+  }
+
+  // 转换e
+  _transE(str) {
+    if(str.contains('e+')){
+      var arr = str.split('e+');
+      var returnNum = _str2num(arr[0]) * pow(10, _str2num(arr[1]));
+      return returnNum.toString();
+    } else {
+      return str;
+    }
   }
 
   @override
@@ -263,10 +312,10 @@ class _CalculatorState extends State<Calculator> {
               children: <Widget>[
                 new Container(
                   child: new Text(
-                    '$_numShow',
+                    _splitStr(_numShow),
                     style: new TextStyle(
 //                      color: Colors.white,
-                        fontSize: 28,
+                        fontSize: 48,
                         color: Colors.white),
                   ),
                   width: 375,
