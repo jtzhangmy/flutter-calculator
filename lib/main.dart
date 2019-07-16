@@ -67,7 +67,8 @@ class _CalculatorState extends State<Calculator> {
         _prevBtn = '';
       });
     } else if (arg == '%') {
-      numAfter = _numShow == '0' ? '0' : (_str2num(_numShow) / 100).toString();
+      print('9999---${_numShow}----${_equal(_numShow, '/', '100').toString()}');
+      numAfter = _numShow == '0' ? '0' : _equal(_numShow, '/', '100').toString();
       if (_prevBtn != '') {
         storageList[lastIndex - 1] = numAfter;
       } else {
@@ -160,7 +161,8 @@ class _CalculatorState extends State<Calculator> {
           });
         }
       }
-    } else if (arg == '=') { // 等于号
+    } else if (arg == '=') {
+      // 等于号
       if (listLen == 3) {
         numAfter = _equal(storageList[0], storageList[1], storageList[2]);
         storageList = [numAfter, arg];
@@ -186,7 +188,8 @@ class _CalculatorState extends State<Calculator> {
           _prevBtn = '';
         });
       }
-    } else { // 普通数字
+    } else {
+      // 普通数字
       // 超位数
       if (storageList[lastIndex].length >= 9) return;
       // 前一个点击+-x/符号
@@ -236,8 +239,7 @@ class _CalculatorState extends State<Calculator> {
     print('---- 符号 $symbol -----');
     final _num1 = _str2num(_transE(num1));
     final _num2 = _str2num(_transE(num2));
-    print(_num1);
-    print(_num2);
+    print('${_num1}----${_num2}');
     var obj = {
       '+': _add(_num1, _num2),
       '-': _minus(_num1, _num2),
@@ -259,13 +261,12 @@ class _CalculatorState extends State<Calculator> {
     // 超范围
     var numStr = num.toString();
     final numStrLen = numStr.length;
-    print(numStr);
     if (numStrLen > 11) {
       if (numStr.contains('.')) {
         return _str2num(numStr.substring(0, 11)).toString();
       } else {
         final sub3 = (_str2num(numStr.substring(0, 3)) / 100).toString();
-        return  sub3 + 'e+${numStrLen-1}';
+        return sub3 + 'e+${numStrLen - 1}';
       }
     } else {
       return numStr;
@@ -274,14 +275,20 @@ class _CalculatorState extends State<Calculator> {
 
   // 分隔符
   _splitStr(str) {
-    if (str.contains('.')) {
+    if (str.contains('.') || str.contains('e')) {
       return str;
     } else {
       final strLen = str.length;
       if (strLen > 3 && strLen < 7) {
-        return str.substring(0, strLen - 3) + ',' + str.substring(strLen - 3, strLen);
+        return str.substring(0, strLen - 3) +
+            ',' +
+            str.substring(strLen - 3, strLen);
       } else if (strLen > 6 && strLen < 10) {
-        return str.substring(0, strLen - 6) + ',' + str.substring(strLen - 6, strLen - 3) + ',' + str.substring(strLen - 3, strLen);
+        return str.substring(0, strLen - 6) +
+            ',' +
+            str.substring(strLen - 6, strLen - 3) +
+            ',' +
+            str.substring(strLen - 3, strLen);
       } else {
         return str;
       }
@@ -290,9 +297,16 @@ class _CalculatorState extends State<Calculator> {
 
   // 转换e
   _transE(str) {
-    if(str.contains('e+')){
+    if (str.contains('e+')) {
       var arr = str.split('e+');
       var returnNum = _str2num(arr[0]) * pow(10, _str2num(arr[1]));
+      return returnNum.toString();
+    } else if(str.contains('e-')) {
+      print(7777777);
+      var arr = str.split('e-');
+      print('${arr[0]}+++${pow(0.1, _str2num(arr[1])).toString()}');
+      var returnNum = _str2num(arr[0]) * pow(0.1, _str2num(arr[1]));
+      print('-------${returnNum}');
       return returnNum.toString();
     } else {
       return str;
