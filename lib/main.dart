@@ -220,19 +220,19 @@ class _CalculatorState extends State<Calculator> {
   }
 
   // 加
-  _add(num1, num2) => num1 == '' ? num2 : num1 + num2;
+  _add(num1, num2) => num1 + num2;
 
   // 减
-  _minus(num1, num2) => num1 == '' ? -num2 : num1 - num2;
+  _minus(num1, num2) => num1 - num2;
 
   // 乘
-  _mult(num1, num2) => num1 == '' ? num2 : num1 * num2;
+  _mult(num1, num2) => num1 * num2;
 
   // 除
-  _division(num1, num2) => num1 == '' ? num2 : num1 / num2;
+  _division(num1, num2) => num1 / num2  ;
 
   // 字符串转数字
-  _str2num(num) => num.contains('.') ? double.parse(num) : int.parse(num);
+  _str2num(num) => num.contains('.') || num.contains('e') ? double.parse(num) : int.parse(num);
 
   // 求等
   String _equal(String num1, String symbol, String num2) {
@@ -261,11 +261,12 @@ class _CalculatorState extends State<Calculator> {
     // 超范围
     var numStr = num.toString();
     final numStrLen = numStr.length;
+    print('equalLength: ${numStrLen}');
     if (numStrLen > 11) {
       if (numStr.contains('.')) {
         return _str2num(numStr.substring(0, 11)).toString();
       } else {
-        final sub3 = (_str2num(numStr.substring(0, 3)) / 100).toString();
+        final sub3 = (_str2num(numStr) / pow(10, numStrLen)).toString();
         return sub3 + 'e+${numStrLen - 1}';
       }
     } else {
@@ -297,7 +298,7 @@ class _CalculatorState extends State<Calculator> {
 
   // 转换e
   _transE(str) {
-    if (str.contains('e+')) {
+    /*if (str.contains('e+')) {
       var arr = str.split('e+');
       var returnNum = _str2num(arr[0]) * pow(10, _str2num(arr[1]));
       return returnNum.toString();
@@ -308,6 +309,11 @@ class _CalculatorState extends State<Calculator> {
       var returnNum = _str2num(arr[0]) * pow(0.1, _str2num(arr[1]));
       print('-------${returnNum}');
       return returnNum.toString();
+    } else {
+      return str;
+    }*/
+    if (str.contains('e')){
+      return double.parse(str).toString();
     } else {
       return str;
     }
