@@ -66,9 +66,17 @@ class _CalculatorState extends State<Calculator> {
         _numShow = '0';
         _prevBtn = '';
       });
+    } else if (_numShow == 'Error') {
+      if (['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].indexOf(arg) > -1) {
+        setState(() {
+          _list = [arg];
+          _numShow = arg;
+        });
+      }
     } else if (arg == '%') {
       print('9999---${_numShow}----${_equal(_numShow, '/', '100').toString()}');
-      numAfter = _numShow == '0' ? '0' : _equal(_numShow, '/', '100').toString();
+      numAfter =
+          _numShow == '0' ? '0' : _equal(_numShow, '/', '100').toString();
       if (_prevBtn != '') {
         storageList[lastIndex - 1] = numAfter;
       } else {
@@ -229,10 +237,12 @@ class _CalculatorState extends State<Calculator> {
   _mult(num1, num2) => num1 * num2;
 
   // 除
-  _division(num1, num2) => num1 / num2  ;
+  _division(num1, num2) => num1 / num2;
 
   // 字符串转数字
-  _str2num(num) => num.contains('.') || num.contains('e') ? double.parse(num) : int.parse(num);
+  _str2num(num) => num.contains('.') || num.contains('e')
+      ? double.parse(num)
+      : int.parse(num);
 
   // 求等
   String _equal(String num1, String symbol, String num2) {
@@ -250,7 +260,7 @@ class _CalculatorState extends State<Calculator> {
     var num = obj[symbol];
     // 判断是否为无穷
     if (num.isInfinite) {
-      return '输入错误';
+      return 'Error';
     }
 
     // 判断无限循环小数
@@ -276,7 +286,7 @@ class _CalculatorState extends State<Calculator> {
 
   // 分隔符
   _splitStr(str) {
-    if (str.contains('.') || str.contains('e')) {
+    if (str.contains('.') || str.contains('e') || str.contains('Error')) {
       return str;
     } else {
       final strLen = str.length;
@@ -312,7 +322,7 @@ class _CalculatorState extends State<Calculator> {
     } else {
       return str;
     }*/
-    if (str.contains('e')){
+    if (str.contains('e')) {
       return double.parse(str).toString();
     } else {
       return str;
