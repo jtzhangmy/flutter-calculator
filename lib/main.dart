@@ -423,30 +423,30 @@ class _CalculatorState extends State<Calculator> {
   }
 
   Widget _button(arg, symbol, gray) {
-    return new Container(
-      child: new Material(
-          child: new FlatButton(
-            child: new Center(
-              child: new Text(
-                arg,
-                style: new TextStyle(
-                    fontSize: 24,
-                    color: symbol
-                        ? _prevBtn == arg ? Colors.orange : Colors.white
-                        : Colors.white),
-              ),
-            ),
-            onPressed: () => _input(arg),
+    return new GestureDetector(
+      child: Container(
+        child: new Center(
+          child: new Text(
+            arg,
+            style: new TextStyle(
+                fontSize: 24,
+                color: symbol
+                    ? _prevBtn == arg ? Colors.orange : Colors.white
+                    : Colors.white),
           ),
-          borderRadius: new BorderRadius.all(const Radius.circular(40)),
-          color: !gray
-              ? symbol
-                  ? _prevBtn == arg ? Colors.white : Colors.orange
-                  : Colors.white24
-              : Colors.white54),
-      width: 68,
-      height: 68,
-      margin: new EdgeInsets.all(10),
+        ),
+        width: 68,
+        height: 68,
+        margin: new EdgeInsets.all(10),
+        decoration: new BoxDecoration(
+            borderRadius: new BorderRadius.all(const Radius.circular(40)),
+            color: !gray
+                ? symbol
+                    ? _prevBtn == arg ? Colors.white : Colors.orange
+                    : Colors.white24
+                : Colors.white54),
+      ),
+      onTap: () => _input(arg),
     );
   }
 }
