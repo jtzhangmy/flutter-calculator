@@ -19,22 +19,13 @@ class _CalculatorState extends State<Calculator> {
   void _input(arg) {
     final lastIndex = _list.length - 1;
     final listLen = _list.length;
-    var storageList = _list;
+    List<String> storageList = _list;
     String numAfter = '';
 
     print(' ');
     print('------------------------------------------');
     if (_list[lastIndex] == '0' &&
-        arg != 'C' &&
-        arg != 'AC' &&
-        arg != '.' &&
-        arg != '+' &&
-        arg != '-' &&
-        arg != 'x' &&
-        arg != '/' &&
-        arg != '+/-' &&
-        arg != '=' &&
-        arg != '%') {
+        !['C', 'AC', '.', '+', '-', 'x', '/', '+/-', '=', '%'].contains(arg)) {
       numAfter = arg;
       storageList[lastIndex] = numAfter;
       setState(() {
@@ -43,12 +34,7 @@ class _CalculatorState extends State<Calculator> {
       });
     } else if (arg == 'C') {
       final lastArg = storageList[lastIndex];
-      if (lastArg == '+' ||
-          lastArg == '-' ||
-          lastArg == 'x' ||
-          lastArg == '/' ||
-          lastArg == '=') {
-        storageList[lastIndex - 1] = '0';
+      if (['+', '-', 'x', '/', '='].contains(lastArg)) {
         setState(() {
           _list = storageList;
           _numShow = '0';
@@ -67,32 +53,20 @@ class _CalculatorState extends State<Calculator> {
         _prevBtn = '';
       });
     } else if (_numShow == 'Error') {
-      if (['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].indexOf(arg) >
-          -1) {
+      if (['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].contains(arg)) {
         setState(() {
           _list = [arg];
           _numShow = arg;
         });
       }
-    } else if (arg == '%') {
-      numAfter =
-          _numShow == '0' ? '0' : _equal(_numShow, '/', '100').toString();
-      if (_prevBtn != '') {
-        storageList[lastIndex - 1] = numAfter;
-      } else {
-        storageList[lastIndex] = numAfter;
+    } else if (arg == '%' || arg == '+/-') {
+      // 点击就计算
+      if (arg == '%') {
+        numAfter = _numShow == '0' ? '0' : _equal(_numShow, '/', '100');
+      } else if (arg == '+/-') {
+        numAfter = _numShow == '0' ? '0' : _equal(_numShow, 'x', '-1');
       }
-      setState(() {
-        _list = storageList;
-        _numShow = numAfter;
-      });
-    } else if (arg == '+/-') {
-      numAfter = _numShow == '0' ? '0' : (_str2num(_numShow) * -1).toString();
-      if (_prevBtn == '') {
-        storageList[lastIndex] = numAfter;
-      } else {
-        storageList[lastIndex - 1] = numAfter;
-      }
+      storageList[_prevBtn == '' ? lastIndex : lastIndex - 1] = numAfter;
       setState(() {
         _list = storageList;
         _numShow = numAfter;
@@ -112,9 +86,9 @@ class _CalculatorState extends State<Calculator> {
           _prevBtn = '';
         });
       }
-    } else if (arg == '+' || arg == '-' || arg == 'x' || arg == '/') {
+    } else if (['+', '-', 'x', '/'].contains(arg)) {
       if (_prevBtn != '' || storageList[lastIndex] == '=') {
-        // 之前按过符号 除了等号
+        // 之前按过符号
         storageList[lastIndex] = arg;
         setState(() {
           _list = storageList;
@@ -182,8 +156,6 @@ class _CalculatorState extends State<Calculator> {
       } else if (listLen == 5) {
         numAfter = _equal(storageList[0], storageList[1],
             _equal(storageList[2], storageList[3], storageList[4]));
-        storageList.removeRange(0, 4);
-        storageList[0] = numAfter;
         storageList = [numAfter, arg];
         setState(() {
           _list = storageList;
@@ -202,8 +174,8 @@ class _CalculatorState extends State<Calculator> {
       if (storageList[lastIndex].length >= 9) return;
       // 前一个点击+-x/符号
       if (_prevBtn != '') {
-        storageList.add(arg);
         numAfter = arg;
+        storageList.add(arg);
         setState(() {
           _list = storageList;
           _numShow = numAfter;
@@ -261,7 +233,7 @@ class _CalculatorState extends State<Calculator> {
     if (num.isInfinite) return 'Error';
 
     // 判断无限循环小数
-    if (!num.isFinite) return num.toStringAsFixed(9).toString();
+    if (num.isFinite) return num.toStringAsFixed(9).toString();
 
     // 超范围
     var numStr = num.toString();
