@@ -75,7 +75,6 @@ class _CalculatorState extends State<Calculator> {
         });
       }
     } else if (arg == '%') {
-      print('9999---${_numShow}----${_equal(_numShow, '/', '100').toString()}');
       numAfter =
           _numShow == '0' ? '0' : _equal(_numShow, '/', '100').toString();
       if (_prevBtn != '') {
@@ -247,10 +246,9 @@ class _CalculatorState extends State<Calculator> {
 
   // 求等
   String _equal(String num1, String symbol, String num2) {
-    print('---- 符号 $symbol -----');
     final _num1 = _str2num(_transE(num1));
     final _num2 = _str2num(_transE(num2));
-    print('${_num1}----${_num2}');
+    print('${_num1}---${symbol}---${_num2}');
     var obj = {
       '+': _add(_num1, _num2),
       '-': _minus(_num1, _num2),
@@ -272,14 +270,16 @@ class _CalculatorState extends State<Calculator> {
     // 超范围
     var numStr = num.toString();
     final numStrLen = numStr.length;
-    print('equalLength: ${numStrLen}');
     if (numStrLen > 11) {
-      if (numStr.contains('.')) {
-        return _str2num(numStr.substring(0, 11)).toString();
+      numStr = num.toStringAsPrecision(6);
+      RegExp regPointZero = new RegExp(r"(\.0*?(?=e))");
+      RegExp regPointNum = new RegExp(r"((?<=\..*)0*?(?=e))");
+      if (regPointZero.hasMatch(numStr) == true){ // e+32时会出现小数
+        numStr = numStr.replaceAll(regPointZero, '');
       } else {
-        final sub3 = (_str2num(numStr) / pow(10, numStrLen)).toString();
-        return sub3 + 'e+${numStrLen - 1}';
+        numStr = numStr.replaceAll(regPointNum, '');
       }
+      return numStr;
     } else {
       return numStr;
     }
@@ -314,10 +314,6 @@ class _CalculatorState extends State<Calculator> {
     } else {
       return str;
     }
-  }
-
-  test(str) {
-    print(str);
   }
 
   @override
