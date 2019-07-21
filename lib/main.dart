@@ -274,12 +274,9 @@ class _CalculatorState extends State<Calculator> {
       numStr = num.toStringAsPrecision(6);
       RegExp regPointZero = new RegExp(r"(\.0*?(?=e))");
       RegExp regPointNum = new RegExp(r"((?<=\..*)0*?(?=e))");
-      if (regPointZero.hasMatch(numStr) == true){ // e+32时会出现小数
-        numStr = numStr.replaceAll(regPointZero, '');
-      } else {
-        numStr = numStr.replaceAll(regPointNum, '');
-      }
-      return numStr;
+      return regPointZero.hasMatch(numStr) == true
+          ? numStr.replaceAll(regPointZero, '')
+          : numStr.replaceAll(regPointNum, '');
     } else {
       return numStr;
     }
@@ -323,96 +320,108 @@ class _CalculatorState extends State<Calculator> {
         theme: new ThemeData.dark(),
         home: new Scaffold(
           body: new Container(
-            child: new Column(
+            child: new Flex(
+              direction: Axis.vertical,
               children: <Widget>[
-                new Container(
-                  child: new Text(
-                    _splitStr(_numShow),
-                    style: new TextStyle(fontSize: 48, color: Colors.white),
-                  ),
-                  width: 375,
-                  height: 150,
-                  padding: new EdgeInsets.all(20),
+                Expanded(
+                  flex: 1,
+                  child: new Container(
+                      child: new Text(
+                        _splitStr(_numShow),
+                        style: new TextStyle(fontSize: 48, color: Colors.white),
+                      ),
+                      width: 375,
+                      height: 130,
+                      padding: new EdgeInsets.only(
+                        top: 40,
+                        right: 20,
+                        bottom: 20,
+                        left: 20,
+                      )),
                 ),
-                new Container(
-                  child: new Column(
-                    children: <Widget>[
-                      new Row(
-                        children: <Widget>[
-                          this._button(
-                              _numShow == '0' ? 'AC' : 'C', false, true),
-                          this._button('+/-', false, true),
-                          this._button('%', false, true),
-                          this._button('/', true, false)
-                        ],
-                      ),
-                      new Row(
-                        children: <Widget>[
-                          this._button('7', false, false),
-                          this._button('8', false, false),
-                          this._button('9', false, false),
-                          this._button('x', true, false)
-                        ],
-                      ),
-                      new Row(
-                        children: <Widget>[
-                          this._button('4', false, false),
-                          this._button('5', false, false),
-                          this._button('6', false, false),
-                          this._button('-', true, false)
-                        ],
-                      ),
-                      new Row(
-                        children: <Widget>[
-                          this._button('1', false, false),
-                          this._button('2', false, false),
-                          this._button('3', false, false),
-                          this._button('+', true, false)
-                        ],
-                      ),
-                      new Row(
-                        children: <Widget>[
-                          new GestureDetector(
-                            child: new Container(
-                              child: new Row(
-                                children: <Widget>[
-                                  new Container(
-                                    child: new Center(
-                                      child: new Text(
-                                        '0',
-                                        style: new TextStyle(
-                                            fontSize: 24, color: Colors.white),
+                Expanded(
+                  flex: 0,
+                  child: new Container(
+                    child: new Column(
+                      children: <Widget>[
+                        new Row(
+                          children: <Widget>[
+                            this._button(
+                                _numShow == '0' ? 'AC' : 'C', false, true),
+                            this._button('+/-', false, true),
+                            this._button('%', false, true),
+                            this._button('/', true, false)
+                          ],
+                        ),
+                        new Row(
+                          children: <Widget>[
+                            this._button('7', false, false),
+                            this._button('8', false, false),
+                            this._button('9', false, false),
+                            this._button('x', true, false)
+                          ],
+                        ),
+                        new Row(
+                          children: <Widget>[
+                            this._button('4', false, false),
+                            this._button('5', false, false),
+                            this._button('6', false, false),
+                            this._button('-', true, false)
+                          ],
+                        ),
+                        new Row(
+                          children: <Widget>[
+                            this._button('1', false, false),
+                            this._button('2', false, false),
+                            this._button('3', false, false),
+                            this._button('+', true, false)
+                          ],
+                        ),
+                        new Row(
+                          children: <Widget>[
+                            new GestureDetector(
+                              child: new Container(
+                                child: new Row(
+                                  children: <Widget>[
+                                    new Container(
+                                      child: new Center(
+                                        child: new Text(
+                                          '0',
+                                          style: new TextStyle(
+                                              fontSize: 24,
+                                              color: Colors.white),
+                                        ),
                                       ),
-                                    ),
-                                    width: 68,
-                                    height: 68,
-                                  )
-                                ],
-                              ),
-                              width: 156,
-                              height: 68,
-                              margin: new EdgeInsets.all(10),
-                              decoration: new BoxDecoration(
-                                color: Colors.white24,
-                                borderRadius: new BorderRadius.all(
-                                  const Radius.circular(34.0),
+                                      width: 68,
+                                      height: 68,
+                                    )
+                                  ],
+                                ),
+                                width: 156,
+                                height: 68,
+                                margin: new EdgeInsets.all(10),
+                                decoration: new BoxDecoration(
+                                  color: Colors.white24,
+                                  borderRadius: new BorderRadius.all(
+                                    const Radius.circular(34.0),
+                                  ),
                                 ),
                               ),
+                              onTap: () => _input('0'),
                             ),
-                            onTap: () => _input('0'),
-                          ),
-                          this._button('.', false, false),
-                          this._button('=', true, false)
-                        ],
-                      ),
-                    ],
+                            this._button('.', false, false),
+                            this._button('=', true, false)
+                          ],
+                        ),
+                      ],
+                    ),
+                    margin: new EdgeInsets.all(10),
                   ),
-                  margin: new EdgeInsets.all(10),
-                ),
+                )
               ],
             ),
             width: 375,
-            height: 812,
+            height: 667,
             color: Colors.black,
           ),
         ));
