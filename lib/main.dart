@@ -67,7 +67,8 @@ class _CalculatorState extends State<Calculator> {
         _prevBtn = '';
       });
     } else if (_numShow == 'Error') {
-      if (['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].indexOf(arg) > -1) {
+      if (['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].indexOf(arg) >
+          -1) {
         setState(() {
           _list = [arg];
           _numShow = arg;
@@ -308,20 +309,6 @@ class _CalculatorState extends State<Calculator> {
 
   // 转换e
   _transE(str) {
-    /*if (str.contains('e+')) {
-      var arr = str.split('e+');
-      var returnNum = _str2num(arr[0]) * pow(10, _str2num(arr[1]));
-      return returnNum.toString();
-    } else if(str.contains('e-')) {
-      print(7777777);
-      var arr = str.split('e-');
-      print('${arr[0]}+++${pow(0.1, _str2num(arr[1])).toString()}');
-      var returnNum = _str2num(arr[0]) * pow(0.1, _str2num(arr[1]));
-      print('-------${returnNum}');
-      return returnNum.toString();
-    } else {
-      return str;
-    }*/
     if (str.contains('e')) {
       return double.parse(str).toString();
     } else {
@@ -329,24 +316,23 @@ class _CalculatorState extends State<Calculator> {
     }
   }
 
+  test(str) {
+    print(str);
+  }
+
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
         title: '计算器',
+        theme: new ThemeData.dark(),
         home: new Scaffold(
-          appBar: new AppBar(
-            title: new Text('计算器'),
-          ),
           body: new Container(
             child: new Column(
               children: <Widget>[
                 new Container(
                   child: new Text(
                     _splitStr(_numShow),
-                    style: new TextStyle(
-//                      color: Colors.white,
-                        fontSize: 48,
-                        color: Colors.white),
+                    style: new TextStyle(fontSize: 48, color: Colors.white),
                   ),
                   width: 375,
                   height: 150,
@@ -390,33 +376,34 @@ class _CalculatorState extends State<Calculator> {
                       ),
                       new Row(
                         children: <Widget>[
-                          new Container(
-                            child: new Material(
-                                child: new FlatButton(
-                                  child: new Row(
-                                    children: <Widget>[
-                                      new Container(
-                                        child: new Center(
-                                          child: new Text(
-                                            '0',
-                                            style: new TextStyle(
-                                                fontSize: 24,
-                                                color: Colors.white),
-                                          ),
-                                        ),
-                                        width: 38,
-                                        height: 68,
+                          new GestureDetector(
+                            child: new Container(
+                              child: new Row(
+                                children: <Widget>[
+                                  new Container(
+                                    child: new Center(
+                                      child: new Text(
+                                        '0',
+                                        style: new TextStyle(
+                                            fontSize: 24, color: Colors.white),
                                       ),
-                                    ],
-                                  ),
-                                  onPressed: () => _input('0'),
-                                ),
+                                    ),
+                                    width: 68,
+                                    height: 68,
+                                  )
+                                ],
+                              ),
+                              width: 156,
+                              height: 68,
+                              margin: new EdgeInsets.all(10),
+                              decoration: new BoxDecoration(
+                                color: Colors.white24,
                                 borderRadius: new BorderRadius.all(
-                                    const Radius.circular(40)),
-                                color: Colors.white24),
-                            width: 156,
-                            height: 68,
-                            margin: new EdgeInsets.all(10),
+                                  const Radius.circular(34.0),
+                                ),
+                              ),
+                            ),
+                            onTap: () => _input('0'),
                           ),
                           this._button('.', false, false),
                           this._button('=', true, false)
