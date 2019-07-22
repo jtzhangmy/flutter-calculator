@@ -245,7 +245,7 @@ class _CalculatorState extends State<Calculator> {
     var numStr = num.toString();
     final numStrLen = numStr.length;
     if (numStrLen > 11) {
-      numStr = num.toStringAsPrecision(6);
+      numStr = num.toStringAsPrecision(8);
       // 末尾为0
       RegExp finalZero = new RegExp(r"0*$");
       // e前.后只有0
@@ -289,9 +289,7 @@ class _CalculatorState extends State<Calculator> {
   }
 
   // 转换e
-  _transE(str) {
-    return str.contains('e') ? double.parse(str).toString() : str;
-  }
+  _transE(str) => str.contains('e') ? double.parse(str).toString() : str;
 
   _symbolBacColor(arg) => prevBtn == arg ? Colors.orange : Colors.white;
 
