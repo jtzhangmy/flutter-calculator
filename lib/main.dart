@@ -246,11 +246,17 @@ class _CalculatorState extends State<Calculator> {
     final numStrLen = numStr.length;
     if (numStrLen > 11) {
       numStr = num.toStringAsPrecision(6);
+      // 末尾为0
+      RegExp finalZero = new RegExp(r"0*$");
+      // e前.后只有0
       RegExp regPointZero = new RegExp(r"(\.0*?(?=e))");
+      // e前.数字后只有0
       RegExp regPointNum = new RegExp(r"((?<=\..*)0*?(?=e))");
-      return regPointZero.hasMatch(numStr) == true
-          ? numStr.replaceAll(regPointZero, '')
-          : numStr.replaceAll(regPointNum, '');
+      return finalZero.hasMatch(numStr) == true && !numStr.contains('e')
+          ? numStr.replaceAll(finalZero, '')
+          : regPointZero.hasMatch(numStr) == true
+              ? numStr.replaceAll(regPointZero, '')
+              : numStr.replaceAll(regPointNum, '');
     } else {
       return numStr;
     }
@@ -282,6 +288,10 @@ class _CalculatorState extends State<Calculator> {
   _transE(str) {
     return str.contains('e') ? double.parse(str).toString() : str;
   }
+
+  _symbolBacColor(arg) => prevBtn == arg ? Colors.orange : Colors.white;
+
+  _symbolTextColor(arg) => prevBtn == arg ? Colors.white : Colors.orange;
 
   @override
   Widget build(BuildContext context) {
@@ -336,12 +346,8 @@ class _CalculatorState extends State<Calculator> {
                                 onPress: input),
                             Button(
                                 arg: '/',
-                                textColor: prevBtn == '/'
-                                    ? Colors.orange
-                                    : Colors.white,
-                                bacColor: prevBtn == '/'
-                                    ? Colors.white
-                                    : Colors.orange,
+                                textColor: _symbolBacColor('/'),
+                                bacColor: _symbolTextColor('/'),
                                 onPress: input),
                           ],
                         ),
@@ -364,12 +370,8 @@ class _CalculatorState extends State<Calculator> {
                                 onPress: input),
                             Button(
                                 arg: 'x',
-                                textColor: prevBtn == 'x'
-                                    ? Colors.orange
-                                    : Colors.white,
-                                bacColor: prevBtn == 'x'
-                                    ? Colors.white
-                                    : Colors.orange,
+                                textColor: _symbolBacColor('x'),
+                                bacColor: _symbolTextColor('x'),
                                 onPress: input)
                           ],
                         ),
@@ -392,12 +394,8 @@ class _CalculatorState extends State<Calculator> {
                                 onPress: input),
                             Button(
                                 arg: '-',
-                                textColor: prevBtn == '-'
-                                    ? Colors.orange
-                                    : Colors.white,
-                                bacColor: prevBtn == '-'
-                                    ? Colors.white
-                                    : Colors.orange,
+                                textColor: _symbolBacColor('-'),
+                                bacColor: _symbolTextColor('-'),
                                 onPress: input)
                           ],
                         ),
@@ -420,12 +418,8 @@ class _CalculatorState extends State<Calculator> {
                                 onPress: input),
                             Button(
                                 arg: '+',
-                                textColor: prevBtn == '+'
-                                    ? Colors.orange
-                                    : Colors.white,
-                                bacColor: prevBtn == '+'
-                                    ? Colors.white
-                                    : Colors.orange,
+                                textColor: _symbolBacColor('+'),
+                                bacColor: _symbolTextColor('+'),
                                 onPress: input),
                           ],
                         ),
