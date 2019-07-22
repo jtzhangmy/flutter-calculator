@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'dart:core';
 import 'button.dart';
 
-void main() => runApp(new Box());
+void main() => runApp(new MyApp());
 
-class Box extends StatelessWidget {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
@@ -180,7 +180,7 @@ class _CalculatorState extends State<Calculator> {
     } else {
       // 普通数字
       // 超位数
-      if (storageList[lastIndex].length >= 9) return;
+      if (storageList[lastIndex].replaceAll('.', '').length >= 9) return;
       // 前一个点击+-x/符号
       if (prevBtn != '') {
         numAfter = arg;
@@ -264,10 +264,14 @@ class _CalculatorState extends State<Calculator> {
 
   // 分隔符
   _splitStr(str) {
-    if (str.contains('.') || str.contains('e') || str.contains('Error')) {
+    final strLen = str.length;
+    if (str.contains('e') || str.contains('Error')) {
       return str;
+    } else if (str.contains('.')) {
+      final indexPoint = str.indexOf('.');
+      print(str.substring(0, str.indexOf('.')));
+      return _splitStr(str.substring(0, indexPoint)) + str.substring(indexPoint, strLen);
     } else {
-      final strLen = str.length;
       if (strLen > 3 && strLen < 7) {
         return str.substring(0, strLen - 3) +
             ',' +
@@ -298,6 +302,8 @@ class _CalculatorState extends State<Calculator> {
     final size = MediaQuery.of(context).size;
     final width = size.width;
     final height = size.height;
+    print('宽：${width}---高：${height}');
+    
     return new Scaffold(
       body: new Container(
         child: new Flex(
