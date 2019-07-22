@@ -1,8 +1,17 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'dart:core';
+import 'button.dart';
 
-void main() => runApp(new Calculator());
+void main() => runApp(new Box());
+
+class Box extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new MaterialApp(
+        title: '计算器', theme: new ThemeData.dark(), home: Calculator());
+  }
+}
 
 class Calculator extends StatefulWidget {
   @override
@@ -14,9 +23,9 @@ class Calculator extends StatefulWidget {
 class _CalculatorState extends State<Calculator> {
   var _list = <String>['0'];
   String _numShow = '0';
-  String _prevBtn = '';
+  String prevBtn = '';
 
-  void _input(arg) {
+  void input(arg) {
     final lastIndex = _list.length - 1;
     final listLen = _list.length;
     List<String> storageList = _list;
@@ -50,7 +59,7 @@ class _CalculatorState extends State<Calculator> {
       setState(() {
         _list = ['0'];
         _numShow = '0';
-        _prevBtn = '';
+        prevBtn = '';
       });
     } else if (_numShow == 'Error') {
       if (['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].contains(arg)) {
@@ -66,14 +75,14 @@ class _CalculatorState extends State<Calculator> {
       } else if (arg == '+/-') {
         numAfter = _numShow == '0' ? '0' : _equal(_numShow, 'x', '-1');
       }
-      storageList[_prevBtn == '' ? lastIndex : lastIndex - 1] = numAfter;
+      storageList[prevBtn == '' ? lastIndex : lastIndex - 1] = numAfter;
       setState(() {
         _list = storageList;
         _numShow = numAfter;
       });
     } else if (arg == '.') {
       if (!_numShow.contains('.')) {
-        if (_prevBtn == '') {
+        if (prevBtn == '') {
           numAfter = _numShow + arg;
           storageList[lastIndex] = numAfter;
         } else {
@@ -83,16 +92,16 @@ class _CalculatorState extends State<Calculator> {
         setState(() {
           _list = storageList;
           _numShow = numAfter;
-          _prevBtn = '';
+          prevBtn = '';
         });
       }
     } else if (['+', '-', 'x', '/'].contains(arg)) {
-      if (_prevBtn != '' || storageList[lastIndex] == '=') {
+      if (prevBtn != '' || storageList[lastIndex] == '=') {
         // 之前按过符号
         storageList[lastIndex] = arg;
         setState(() {
           _list = storageList;
-          _prevBtn = arg;
+          prevBtn = arg;
         });
       } else {
         if (listLen == 3) {
@@ -102,7 +111,7 @@ class _CalculatorState extends State<Calculator> {
             storageList.add(arg);
             setState(() {
               _list = storageList;
-              _prevBtn = arg;
+              prevBtn = arg;
             });
           } else {
             numAfter = _equal(storageList[0], storageList[1], storageList[2]);
@@ -111,7 +120,7 @@ class _CalculatorState extends State<Calculator> {
             setState(() {
               _list = storageList;
               _numShow = numAfter;
-              _prevBtn = arg;
+              prevBtn = arg;
             });
           }
         } else if (listLen == 5) {
@@ -121,7 +130,7 @@ class _CalculatorState extends State<Calculator> {
             setState(() {
               _list = storageList;
               _numShow = numAfter;
-              _prevBtn = arg;
+              prevBtn = arg;
             });
           } else {
             numAfter = _equal(storageList[0], storageList[1],
@@ -132,14 +141,14 @@ class _CalculatorState extends State<Calculator> {
             setState(() {
               _list = storageList;
               _numShow = numAfter;
-              _prevBtn = arg;
+              prevBtn = arg;
             });
           }
         } else {
           storageList.add(arg);
           setState(() {
             _list = storageList;
-            _prevBtn = arg;
+            prevBtn = arg;
           });
         }
       }
@@ -151,7 +160,7 @@ class _CalculatorState extends State<Calculator> {
         setState(() {
           _list = storageList;
           _numShow = numAfter;
-          _prevBtn = '';
+          prevBtn = '';
         });
       } else if (listLen == 5) {
         numAfter = _equal(storageList[0], storageList[1],
@@ -160,12 +169,12 @@ class _CalculatorState extends State<Calculator> {
         setState(() {
           _list = storageList;
           _numShow = numAfter;
-          _prevBtn = '';
+          prevBtn = '';
         });
       } else {
         setState(() {
           _list = storageList;
-          _prevBtn = '';
+          prevBtn = '';
         });
       }
     } else {
@@ -173,13 +182,13 @@ class _CalculatorState extends State<Calculator> {
       // 超位数
       if (storageList[lastIndex].length >= 9) return;
       // 前一个点击+-x/符号
-      if (_prevBtn != '') {
+      if (prevBtn != '') {
         numAfter = arg;
         storageList.add(arg);
         setState(() {
           _list = storageList;
           _numShow = numAfter;
-          _prevBtn = '';
+          prevBtn = '';
         });
       } else {
         if (storageList[lastIndex] == '=') {
@@ -192,7 +201,7 @@ class _CalculatorState extends State<Calculator> {
         setState(() {
           _numShow = numAfter;
           _list = storageList;
-          _prevBtn = '';
+          prevBtn = '';
         });
       }
     }
@@ -231,9 +240,6 @@ class _CalculatorState extends State<Calculator> {
     final num = obj[symbol];
     // 判断是否为无穷
     if (num.isInfinite) return 'Error';
-
-    // 判断无限循环小数
-    if (num.isFinite) return num.toStringAsFixed(9).toString();
 
     // 超范围
     var numStr = num.toString();
@@ -274,157 +280,218 @@ class _CalculatorState extends State<Calculator> {
 
   // 转换e
   _transE(str) {
-    if (str.contains('e')) {
-      return double.parse(str).toString();
-    } else {
-      return str;
-    }
+    return str.contains('e') ? double.parse(str).toString() : str;
   }
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-        title: '计算器',
-        theme: new ThemeData.dark(),
-        home: new Scaffold(
-          body: new Container(
-            child: new Flex(
-              direction: Axis.vertical,
-              children: <Widget>[
-                Expanded(
-                  flex: 1,
-                  child: new Container(
-                      child: new Text(
-                        _splitStr(_numShow),
-                        style: new TextStyle(fontSize: 48, color: Colors.white),
-                      ),
-                      width: 375,
-                      height: 130,
-                      padding: new EdgeInsets.only(
-                        top: 40,
-                        right: 20,
-                        bottom: 20,
-                        left: 20,
-                      )),
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+    final height = size.height;
+    return new Scaffold(
+      body: new Container(
+        child: new Flex(
+          direction: Axis.vertical,
+          children: <Widget>[
+            Expanded(
+              flex: 1,
+              child: new Container(
+                child: new Text(
+                  _splitStr(_numShow),
+                  style: new TextStyle(fontSize: 48, color: Colors.white),
                 ),
-                Expanded(
-                  flex: 0,
+                width: width,
+                height: 130,
+                padding: new EdgeInsets.only(
+                  top: 40,
+                  right: 20,
+                  bottom: 20,
+                  left: 20,
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 0,
+              child: new Container(
+                child: new Center(
                   child: new Container(
-                    child: new Center(
-                      child: new Column(
-                        children: <Widget>[
-                          new Row(
-                            children: <Widget>[
-                              this._button(
-                                  _numShow == '0' ? 'AC' : 'C', false, true),
-                              this._button('+/-', false, true),
-                              this._button('%', false, true),
-                              this._button('/', true, false)
-                            ],
-                          ),
-                          new Row(
-                            children: <Widget>[
-                              this._button('7', false, false),
-                              this._button('8', false, false),
-                              this._button('9', false, false),
-                              this._button('x', true, false)
-                            ],
-                          ),
-                          new Row(
-                            children: <Widget>[
-                              this._button('4', false, false),
-                              this._button('5', false, false),
-                              this._button('6', false, false),
-                              this._button('-', true, false)
-                            ],
-                          ),
-                          new Row(
-                            children: <Widget>[
-                              this._button('1', false, false),
-                              this._button('2', false, false),
-                              this._button('3', false, false),
-                              this._button('+', true, false)
-                            ],
-                          ),
-                          new Row(
-                            children: <Widget>[
-                              new GestureDetector(
-                                child: new Container(
-                                  child: new Row(
-                                    children: <Widget>[
-                                      new Container(
-                                        child: new Center(
-                                          child: new Text(
-                                            '0',
-                                            style: new TextStyle(
-                                                fontSize: 24,
-                                                color: Colors.white),
-                                          ),
+                    child: new Column(
+                      children: <Widget>[
+                        new Row(
+                          children: <Widget>[
+                            Button(
+                                arg: _numShow == '0' ? 'AC' : 'C',
+                                textColor: Colors.white,
+                                bacColor: Colors.white54,
+                                onPress: input),
+                            Button(
+                                arg: '+/-',
+                                textColor: Colors.white,
+                                bacColor: Colors.white54,
+                                onPress: input),
+                            Button(
+                                arg: '%',
+                                textColor: Colors.white,
+                                bacColor: Colors.white54,
+                                onPress: input),
+                            Button(
+                                arg: '/',
+                                textColor: prevBtn == '/'
+                                    ? Colors.orange
+                                    : Colors.white,
+                                bacColor: prevBtn == '/'
+                                    ? Colors.white
+                                    : Colors.orange,
+                                onPress: input),
+                          ],
+                        ),
+                        new Row(
+                          children: <Widget>[
+                            Button(
+                                arg: '7',
+                                textColor: Colors.white,
+                                bacColor: Colors.white24,
+                                onPress: input),
+                            Button(
+                                arg: '8',
+                                textColor: Colors.white,
+                                bacColor: Colors.white24,
+                                onPress: input),
+                            Button(
+                                arg: '9',
+                                textColor: Colors.white,
+                                bacColor: Colors.white24,
+                                onPress: input),
+                            Button(
+                                arg: 'x',
+                                textColor: prevBtn == 'x'
+                                    ? Colors.orange
+                                    : Colors.white,
+                                bacColor: prevBtn == 'x'
+                                    ? Colors.white
+                                    : Colors.orange,
+                                onPress: input)
+                          ],
+                        ),
+                        new Row(
+                          children: <Widget>[
+                            Button(
+                                arg: '4',
+                                textColor: Colors.white,
+                                bacColor: Colors.white24,
+                                onPress: input),
+                            Button(
+                                arg: '5',
+                                textColor: Colors.white,
+                                bacColor: Colors.white24,
+                                onPress: input),
+                            Button(
+                                arg: '6',
+                                textColor: Colors.white,
+                                bacColor: Colors.white24,
+                                onPress: input),
+                            Button(
+                                arg: '-',
+                                textColor: prevBtn == '-'
+                                    ? Colors.orange
+                                    : Colors.white,
+                                bacColor: prevBtn == '-'
+                                    ? Colors.white
+                                    : Colors.orange,
+                                onPress: input)
+                          ],
+                        ),
+                        new Row(
+                          children: <Widget>[
+                            Button(
+                                arg: '1',
+                                textColor: Colors.white,
+                                bacColor: Colors.white24,
+                                onPress: input),
+                            Button(
+                                arg: '2',
+                                textColor: Colors.white,
+                                bacColor: Colors.white24,
+                                onPress: input),
+                            Button(
+                                arg: '3',
+                                textColor: Colors.white,
+                                bacColor: Colors.white24,
+                                onPress: input),
+                            Button(
+                                arg: '+',
+                                textColor: prevBtn == '+'
+                                    ? Colors.orange
+                                    : Colors.white,
+                                bacColor: prevBtn == '+'
+                                    ? Colors.white
+                                    : Colors.orange,
+                                onPress: input),
+                          ],
+                        ),
+                        new Row(
+                          children: <Widget>[
+                            new GestureDetector(
+                              child: new Container(
+                                child: new Row(
+                                  children: <Widget>[
+                                    new Container(
+                                      child: new Center(
+                                        child: new Text(
+                                          '0',
+                                          style: new TextStyle(
+                                              fontSize: 24,
+                                              color: Colors.white),
                                         ),
-                                        width: 68,
-                                        height: 68,
-                                      )
-                                    ],
-                                  ),
-                                  width: 156,
-                                  height: 68,
-                                  margin: new EdgeInsets.all(10),
-                                  decoration: new BoxDecoration(
-                                    color: Colors.white24,
-                                    borderRadius: new BorderRadius.all(
-                                      const Radius.circular(34.0),
-                                    ),
+                                      ),
+                                      width: 68,
+                                      height: 68,
+                                    )
+                                  ],
+                                ),
+                                width: 156,
+                                height: 68,
+                                margin: new EdgeInsets.all(10),
+                                decoration: new BoxDecoration(
+                                  color: Colors.white24,
+                                  borderRadius: new BorderRadius.all(
+                                    const Radius.circular(34.0),
                                   ),
                                 ),
-                                onTap: () => _input('0'),
                               ),
-                              this._button('.', false, false),
-                              this._button('=', true, false)
-                            ],
-                          ),
-                        ],
-                      ),
+                              onTap: () => input('0'),
+                            ),
+                            Button(
+                                arg: '.',
+                                textColor: Colors.white,
+                                bacColor: Colors.white24,
+                                onPress: input),
+                            Button(
+                                arg: '=',
+                                textColor: Colors.white,
+                                bacColor: Colors.orange,
+                                onPress: input),
+                          ],
+                        ),
+                      ],
                     ),
-                    margin: new EdgeInsets.only(
-                      top: 10,
-                      right: 10,
-                      bottom: 20,
-                      left: 10,
-                    ),
+                    width: 352,
+                    height: 440,
                   ),
-                )
-              ],
-            ),
-            color: Colors.black,
-          ),
-        ));
-  }
-
-  Widget _button(arg, symbol, gray) {
-    return new GestureDetector(
-      child: Container(
-        child: new Center(
-          child: new Text(
-            arg,
-            style: new TextStyle(
-                fontSize: 24,
-                color: symbol
-                    ? _prevBtn == arg ? Colors.orange : Colors.white
-                    : Colors.white),
-          ),
+                ),
+                width: width,
+                margin: new EdgeInsets.only(
+                  top: 10,
+                  right: 10,
+                  bottom: 20,
+                  left: 10,
+                ),
+              ),
+            )
+          ],
         ),
-        width: 68,
-        height: 68,
-        margin: new EdgeInsets.all(10),
-        decoration: new BoxDecoration(
-            borderRadius: new BorderRadius.all(const Radius.circular(40)),
-            color: !gray
-                ? symbol
-                    ? _prevBtn == arg ? Colors.white : Colors.orange
-                    : Colors.white24
-                : Colors.white54),
+        color: Colors.black,
       ),
-      onTap: () => _input(arg),
     );
   }
 }
