@@ -270,7 +270,8 @@ class _CalculatorState extends State<Calculator> {
     } else if (str.contains('.')) {
       final indexPoint = str.indexOf('.');
       print(str.substring(0, str.indexOf('.')));
-      return _splitStr(str.substring(0, indexPoint)) + str.substring(indexPoint, strLen);
+      return _splitStr(str.substring(0, indexPoint)) +
+          str.substring(indexPoint, strLen);
     } else {
       if (strLen > 3 && strLen < 7) {
         return str.substring(0, strLen - 3) +
@@ -297,26 +298,37 @@ class _CalculatorState extends State<Calculator> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final width = size.width;
-    final height = size.height;
-    print('宽：${width}---高：${height}');
-    
-    return new Scaffold(
-      body: new Container(
-        child: new Flex(
+    final media = MediaQuery.of(context);
+    final mediaPadding = media.padding;
+    final size = media.size;
+    final double topPadding = mediaPadding.top;
+    final double bottomPadding = mediaPadding.bottom;
+    final double leftPadding = mediaPadding.left;
+    final double rightPadding = mediaPadding.right;
+    double width = size.width - leftPadding - rightPadding;
+    double height = size.height - topPadding - bottomPadding;
+    final direction = height > width ? 'column' : 'row';
+    double buttonWidth =
+        direction == 'column' ? (width - 20) / 4 - 20 : (width - 20) / 8 - 10;
+    double buttonHeight =
+        direction == 'column' ? buttonWidth : (height - 40 - 50) / 5 - 20;
+    double buttonZeroWidth =
+        direction == 'column' ? (width - 20) / 2 - 20 : (width - 20) / 4 - 10;
+
+    return Scaffold(
+      body: Container(
+        child: Flex(
           direction: Axis.vertical,
           children: <Widget>[
             Expanded(
               flex: 1,
-              child: new Container(
-                child: new Text(
-                  _splitStr(_numShow),
-                  style: new TextStyle(fontSize: 48, color: Colors.white),
-                ),
+              child: Container(
+                child: Text(_splitStr(_numShow),
+                    style: TextStyle(fontSize: 48, color: Colors.white),
+                    textAlign: TextAlign.right),
                 width: width,
-                height: 130,
-                padding: new EdgeInsets.only(
+                height: 30,
+                padding: EdgeInsets.only(
                   top: 40,
                   right: 20,
                   bottom: 20,
@@ -326,105 +338,375 @@ class _CalculatorState extends State<Calculator> {
             ),
             Expanded(
               flex: 0,
-              child: new Container(
-                child: new Center(
-                  child: new Container(
-                    child: new Column(
+              child: Container(
+                child: Row(
+                  children: <Widget>[
+                    direction == 'row'
+                        ? Column(
+                            children: <Widget>[
+                              Row(
+                                children: <Widget>[
+                                  Button(
+                                    arg: '(',
+                                    textColor: Colors.white,
+                                    bacColor: Colors.white12,
+                                    onPress: input,
+                                    width: buttonWidth,
+                                    height: buttonHeight,
+                                    direction: direction,
+                                  ),
+                                  Button(
+                                    arg: ')',
+                                    textColor: Colors.white,
+                                    bacColor: Colors.white12,
+                                    onPress: input,
+                                    width: buttonWidth,
+                                    height: buttonHeight,
+                                    direction: direction,
+                                  ),
+                                  Button(
+                                    arg: '2nd',
+                                    textColor: Colors.white,
+                                    bacColor: Colors.white12,
+                                    onPress: input,
+                                    width: buttonWidth,
+                                    height: buttonHeight,
+                                    direction: direction,
+                                  ),
+                                  Button(
+                                    arg: '1/x',
+                                    textColor: Colors.white,
+                                    bacColor: Colors.white12,
+                                    onPress: input,
+                                    width: buttonWidth,
+                                    height: buttonHeight,
+                                    direction: direction,
+                                  )
+                                ],
+                              ),
+                              Row(
+                                children: <Widget>[
+                                  Button(
+                                    arg: 'ln',
+                                    textColor: Colors.white,
+                                    bacColor: Colors.white12,
+                                    onPress: input,
+                                    width: buttonWidth,
+                                    height: buttonHeight,
+                                    direction: direction,
+                                  ),
+                                  Button(
+                                    arg: 'lg',
+                                    textColor: Colors.white,
+                                    bacColor: Colors.white12,
+                                    onPress: input,
+                                    width: buttonWidth,
+                                    height: buttonHeight,
+                                    direction: direction,
+                                  ),
+                                  Button(
+                                    arg: 'x!',
+                                    textColor: Colors.white,
+                                    bacColor: Colors.white12,
+                                    onPress: input,
+                                    width: buttonWidth,
+                                    height: buttonHeight,
+                                    direction: direction,
+                                  ),
+                                  Button(
+                                    arg: 'e',
+                                    textColor: Colors.white,
+                                    bacColor: Colors.white12,
+                                    onPress: input,
+                                    width: buttonWidth,
+                                    height: buttonHeight,
+                                    direction: direction,
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: <Widget>[
+                                  Button(
+                                    arg: 'x^2',
+                                    textColor: Colors.white,
+                                    bacColor: Colors.white12,
+                                    onPress: input,
+                                    width: buttonWidth,
+                                    height: buttonHeight,
+                                    direction: direction,
+                                  ),
+                                  Button(
+                                    arg: 'x^3',
+                                    textColor: Colors.white,
+                                    bacColor: Colors.white12,
+                                    onPress: input,
+                                    width: buttonWidth,
+                                    height: buttonHeight,
+                                    direction: direction,
+                                  ),
+                                  Button(
+                                    arg: 'x^y',
+                                    textColor: Colors.white,
+                                    bacColor: Colors.white12,
+                                    onPress: input,
+                                    width: buttonWidth,
+                                    height: buttonHeight,
+                                    direction: direction,
+                                  ),
+                                  Button(
+                                    arg: 'e^y',
+                                    textColor: Colors.white,
+                                    bacColor: Colors.white12,
+                                    onPress: input,
+                                    width: buttonWidth,
+                                    height: buttonHeight,
+                                    direction: direction,
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: <Widget>[
+                                  Button(
+                                    arg: 'x^-2',
+                                    textColor: Colors.white,
+                                    bacColor: Colors.white12,
+                                    onPress: input,
+                                    width: buttonWidth,
+                                    height: buttonHeight,
+                                    direction: direction,
+                                  ),
+                                  Button(
+                                    arg: 'x^-3',
+                                    textColor: Colors.white,
+                                    bacColor: Colors.white12,
+                                    onPress: input,
+                                    width: buttonWidth,
+                                    height: buttonHeight,
+                                    direction: direction,
+                                  ),
+                                  Button(
+                                    arg: 'x^-y',
+                                    textColor: Colors.white,
+                                    bacColor: Colors.white12,
+                                    onPress: input,
+                                    width: buttonWidth,
+                                    height: buttonHeight,
+                                    direction: direction,
+                                  ),
+                                  Button(
+                                    arg: '10^x',
+                                    textColor: Colors.white,
+                                    bacColor: Colors.white12,
+                                    onPress: input,
+                                    width: buttonWidth,
+                                    height: buttonHeight,
+                                    direction: direction,
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: <Widget>[
+                                  Button(
+                                    arg: 'sin',
+                                    textColor: Colors.white,
+                                    bacColor: Colors.white12,
+                                    onPress: input,
+                                    width: buttonWidth,
+                                    height: buttonHeight,
+                                    direction: direction,
+                                  ),
+                                  Button(
+                                    arg: 'cos',
+                                    textColor: Colors.white,
+                                    bacColor: Colors.white12,
+                                    onPress: input,
+                                    width: buttonWidth,
+                                    height: buttonHeight,
+                                    direction: direction,
+                                  ),
+                                  Button(
+                                    arg: 'tan',
+                                    textColor: Colors.white,
+                                    bacColor: Colors.white12,
+                                    onPress: input,
+                                    width: buttonWidth,
+                                    height: buttonHeight,
+                                    direction: direction,
+                                  ),
+                                  Button(
+                                    arg: 'π',
+                                    textColor: Colors.white,
+                                    bacColor: Colors.white12,
+                                    onPress: input,
+                                    width: buttonWidth,
+                                    height: buttonHeight,
+                                    direction: direction,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )
+                        : Text(''),
+                    Column(
                       children: <Widget>[
                         new Row(
                           children: <Widget>[
                             Button(
-                                arg: _numShow == '0' ? 'AC' : 'C',
-                                textColor: Colors.white,
-                                bacColor: Colors.white54,
-                                onPress: input),
+                              arg: _numShow == '0' ? 'AC' : 'C',
+                              textColor: Colors.white,
+                              bacColor: Colors.white54,
+                              onPress: input,
+                              width: buttonWidth,
+                              height: buttonHeight,
+                              direction: direction,
+                            ),
                             Button(
-                                arg: '+/-',
-                                textColor: Colors.white,
-                                bacColor: Colors.white54,
-                                onPress: input),
+                              arg: '+/-',
+                              textColor: Colors.white,
+                              bacColor: Colors.white54,
+                              onPress: input,
+                              width: buttonWidth,
+                              height: buttonHeight,
+                              direction: direction,
+                            ),
                             Button(
-                                arg: '%',
-                                textColor: Colors.white,
-                                bacColor: Colors.white54,
-                                onPress: input),
+                              arg: '%',
+                              textColor: Colors.white,
+                              bacColor: Colors.white54,
+                              onPress: input,
+                              width: buttonWidth,
+                              height: buttonHeight,
+                              direction: direction,
+                            ),
                             Button(
-                                arg: '/',
-                                textColor: _symbolBacColor('/'),
-                                bacColor: _symbolTextColor('/'),
-                                onPress: input),
+                              arg: '/',
+                              textColor: _symbolBacColor('/'),
+                              bacColor: _symbolTextColor('/'),
+                              onPress: input,
+                              width: buttonWidth,
+                              height: buttonHeight,
+                              direction: direction,
+                            ),
                           ],
                         ),
                         new Row(
                           children: <Widget>[
                             Button(
-                                arg: '7',
-                                textColor: Colors.white,
-                                bacColor: Colors.white24,
-                                onPress: input),
+                              arg: '7',
+                              textColor: Colors.white,
+                              bacColor: Colors.white24,
+                              onPress: input,
+                              width: buttonWidth,
+                              height: buttonHeight,
+                              direction: direction,
+                            ),
                             Button(
-                                arg: '8',
-                                textColor: Colors.white,
-                                bacColor: Colors.white24,
-                                onPress: input),
+                              arg: '8',
+                              textColor: Colors.white,
+                              bacColor: Colors.white24,
+                              onPress: input,
+                              width: buttonWidth,
+                              height: buttonHeight,
+                              direction: direction,
+                            ),
                             Button(
-                                arg: '9',
-                                textColor: Colors.white,
-                                bacColor: Colors.white24,
-                                onPress: input),
+                              arg: '9',
+                              textColor: Colors.white,
+                              bacColor: Colors.white24,
+                              onPress: input,
+                              width: buttonWidth,
+                              height: buttonHeight,
+                              direction: direction,
+                            ),
                             Button(
-                                arg: 'x',
-                                textColor: _symbolBacColor('x'),
-                                bacColor: _symbolTextColor('x'),
-                                onPress: input)
+                              arg: 'x',
+                              textColor: _symbolBacColor('x'),
+                              bacColor: _symbolTextColor('x'),
+                              onPress: input,
+                              width: buttonWidth,
+                              height: buttonHeight,
+                              direction: direction,
+                            )
                           ],
                         ),
                         new Row(
                           children: <Widget>[
                             Button(
-                                arg: '4',
-                                textColor: Colors.white,
-                                bacColor: Colors.white24,
-                                onPress: input),
+                              arg: '4',
+                              textColor: Colors.white,
+                              bacColor: Colors.white24,
+                              onPress: input,
+                              width: buttonWidth,
+                              height: buttonHeight,
+                              direction: direction,
+                            ),
                             Button(
-                                arg: '5',
-                                textColor: Colors.white,
-                                bacColor: Colors.white24,
-                                onPress: input),
+                              arg: '5',
+                              textColor: Colors.white,
+                              bacColor: Colors.white24,
+                              onPress: input,
+                              width: buttonWidth,
+                              height: buttonHeight,
+                              direction: direction,
+                            ),
                             Button(
-                                arg: '6',
-                                textColor: Colors.white,
-                                bacColor: Colors.white24,
-                                onPress: input),
+                              arg: '6',
+                              textColor: Colors.white,
+                              bacColor: Colors.white24,
+                              onPress: input,
+                              width: buttonWidth,
+                              height: buttonHeight,
+                              direction: direction,
+                            ),
                             Button(
-                                arg: '-',
-                                textColor: _symbolBacColor('-'),
-                                bacColor: _symbolTextColor('-'),
-                                onPress: input)
+                              arg: '-',
+                              textColor: _symbolBacColor('-'),
+                              bacColor: _symbolTextColor('-'),
+                              onPress: input,
+                              width: buttonWidth,
+                              height: buttonHeight,
+                              direction: direction,
+                            )
                           ],
                         ),
                         new Row(
                           children: <Widget>[
                             Button(
-                                arg: '1',
-                                textColor: Colors.white,
-                                bacColor: Colors.white24,
-                                onPress: input),
+                              arg: '1',
+                              textColor: Colors.white,
+                              bacColor: Colors.white24,
+                              onPress: input,
+                              width: buttonWidth,
+                              height: buttonHeight,
+                              direction: direction,
+                            ),
                             Button(
-                                arg: '2',
-                                textColor: Colors.white,
-                                bacColor: Colors.white24,
-                                onPress: input),
+                              arg: '2',
+                              textColor: Colors.white,
+                              bacColor: Colors.white24,
+                              onPress: input,
+                              width: buttonWidth,
+                              height: buttonHeight,
+                              direction: direction,
+                            ),
                             Button(
-                                arg: '3',
-                                textColor: Colors.white,
-                                bacColor: Colors.white24,
-                                onPress: input),
+                              arg: '3',
+                              textColor: Colors.white,
+                              bacColor: Colors.white24,
+                              onPress: input,
+                              width: buttonWidth,
+                              height: buttonHeight,
+                              direction: direction,
+                            ),
                             Button(
-                                arg: '+',
-                                textColor: _symbolBacColor('+'),
-                                bacColor: _symbolTextColor('+'),
-                                onPress: input),
+                              arg: '+',
+                              textColor: _symbolBacColor('+'),
+                              bacColor: _symbolTextColor('+'),
+                              onPress: input,
+                              width: buttonWidth,
+                              height: buttonHeight,
+                              direction: direction,
+                            ),
                           ],
                         ),
                         new Row(
@@ -447,42 +729,49 @@ class _CalculatorState extends State<Calculator> {
                                     )
                                   ],
                                 ),
-                                width: 156,
-                                height: 68,
-                                margin: new EdgeInsets.all(10),
-                                decoration: new BoxDecoration(
+                                width: buttonZeroWidth,
+                                height: buttonHeight,
+                                margin: EdgeInsets.all(
+                                    direction == 'column' ? 10 : 5),
+                                decoration: BoxDecoration(
                                   color: Colors.white24,
-                                  borderRadius: new BorderRadius.all(
-                                    const Radius.circular(34.0),
+                                  borderRadius: BorderRadius.all(
+                                    const Radius.circular(50),
                                   ),
                                 ),
                               ),
                               onTap: () => input('0'),
                             ),
                             Button(
-                                arg: '.',
-                                textColor: Colors.white,
-                                bacColor: Colors.white24,
-                                onPress: input),
+                              arg: '.',
+                              textColor: Colors.white,
+                              bacColor: Colors.white24,
+                              onPress: input,
+                              width: buttonWidth,
+                              height: buttonHeight,
+                              direction: direction,
+                            ),
                             Button(
-                                arg: '=',
-                                textColor: Colors.white,
-                                bacColor: Colors.orange,
-                                onPress: input),
+                              arg: '=',
+                              textColor: Colors.white,
+                              bacColor: Colors.orange,
+                              onPress: input,
+                              width: buttonWidth,
+                              height: buttonHeight,
+                              direction: direction,
+                            ),
                           ],
                         ),
                       ],
                     ),
-                    width: 352,
-                    height: 440,
-                  ),
+                  ],
                 ),
                 width: width,
-                margin: new EdgeInsets.only(
-                  top: 10,
-                  right: 10,
-                  bottom: 20,
-                  left: 10,
+                margin: EdgeInsets.only(
+                  top: topPadding,
+                  right: rightPadding,
+                  bottom: bottomPadding,
+                  left: leftPadding,
                 ),
               ),
             )
