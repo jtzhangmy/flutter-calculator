@@ -365,7 +365,7 @@ class _CalculatorState extends State<Calculator> {
                                     direction: direction,
                                   ),
                                   Button(
-                                    arg: '2nd',
+                                    arg: 'x!',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
                                     onPress: input,
@@ -387,7 +387,7 @@ class _CalculatorState extends State<Calculator> {
                               Row(
                                 children: <Widget>[
                                   Button(
-                                    arg: 'ln',
+                                    arg: '2nd',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
                                     onPress: input,
@@ -395,48 +395,8 @@ class _CalculatorState extends State<Calculator> {
                                     height: buttonHeight,
                                     direction: direction,
                                   ),
-                                  Button(
-                                    arg: 'lg',
-                                    textColor: Colors.white,
-                                    bacColor: Colors.white12,
-                                    onPress: input,
-                                    width: buttonWidth,
-                                    height: buttonHeight,
-                                    direction: direction,
-                                  ),
-                                  Button(
-                                    arg: 'x!',
-                                    textColor: Colors.white,
-                                    bacColor: Colors.white12,
-                                    onPress: input,
-                                    width: buttonWidth,
-                                    height: buttonHeight,
-                                    direction: direction,
-                                  ),
-                                  Button(
-                                    arg: 'e',
-                                    textColor: Colors.white,
-                                    bacColor: Colors.white12,
-                                    onPress: input,
-                                    width: buttonWidth,
-                                    height: buttonHeight,
-                                    direction: direction,
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: <Widget>[
                                   Button(
                                     arg: 'x^2',
-                                    textColor: Colors.white,
-                                    bacColor: Colors.white12,
-                                    onPress: input,
-                                    width: buttonWidth,
-                                    height: buttonHeight,
-                                    direction: direction,
-                                  ),
-                                  Button(
-                                    arg: 'x^3',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
                                     onPress: input,
@@ -467,7 +427,7 @@ class _CalculatorState extends State<Calculator> {
                               Row(
                                 children: <Widget>[
                                   Button(
-                                    arg: 'x^-2',
+                                    arg: 'save',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
                                     onPress: input,
@@ -476,7 +436,7 @@ class _CalculatorState extends State<Calculator> {
                                     direction: direction,
                                   ),
                                   Button(
-                                    arg: 'x^-3',
+                                    arg: 'x^-2',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
                                     onPress: input,
@@ -495,6 +455,46 @@ class _CalculatorState extends State<Calculator> {
                                   ),
                                   Button(
                                     arg: '10^x',
+                                    textColor: Colors.white,
+                                    bacColor: Colors.white12,
+                                    onPress: input,
+                                    width: buttonWidth,
+                                    height: buttonHeight,
+                                    direction: direction,
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: <Widget>[
+                                  Button(
+                                    arg: 'load',
+                                    textColor: Colors.white,
+                                    bacColor: Colors.white12,
+                                    onPress: input,
+                                    width: buttonWidth,
+                                    height: buttonHeight,
+                                    direction: direction,
+                                  ),
+                                  Button(
+                                    arg: 'ln',
+                                    textColor: Colors.white,
+                                    bacColor: Colors.white12,
+                                    onPress: input,
+                                    width: buttonWidth,
+                                    height: buttonHeight,
+                                    direction: direction,
+                                  ),
+                                  Button(
+                                    arg: 'lg',
+                                    textColor: Colors.white,
+                                    bacColor: Colors.white12,
+                                    onPress: input,
+                                    width: buttonWidth,
+                                    height: buttonHeight,
+                                    direction: direction,
+                                  ),
+                                  Button(
+                                    arg: 'e',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
                                     onPress: input,
