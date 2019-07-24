@@ -24,7 +24,9 @@ class _CalculatorState extends State<Calculator> {
   var _list = <String>['0'];
   String _numShow = '0';
   String prevBtn = '';
-  var secondActive = false;
+  bool secondActive = false;
+  String _saveData = '';
+  bool _isSaved = false;
 
   void input(arg) {
     final lastIndex = _list.length - 1;
@@ -38,6 +40,31 @@ class _CalculatorState extends State<Calculator> {
       setState(() {
         secondActive = !secondActive;
       });
+    } else if (arg == 'save'){
+      setState(() {
+        _saveData = _numShow;
+        _isSaved = true;
+      });
+    } else if (arg == 'load') {
+      if (_isSaved == true) {
+        if (prevBtn == '') {
+          print('无符号');
+          storageList[lastIndex] = _saveData;
+          setState(() {
+            _numShow = _saveData;
+            _list = storageList;
+            _isSaved = false;
+          });
+        } else {
+          print('有符号');
+          storageList.add(_saveData);
+          setState(() {
+            _numShow = _saveData;
+            _list = storageList;
+            _isSaved = false;
+          });
+        }
+      }
     } else if (_list[lastIndex] == '0' &&
         ![
           'C',
@@ -633,7 +660,7 @@ class _CalculatorState extends State<Calculator> {
                                   Button(
                                     arg: 'save',
                                     textColor: Colors.white,
-                                    bacColor: Colors.white12,
+                                    bacColor: _isSaved ? Colors.white24 : Colors.white12,
                                     onPress: input,
                                     width: buttonWidth,
                                     height: buttonHeight,
