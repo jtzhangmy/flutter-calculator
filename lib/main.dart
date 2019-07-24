@@ -92,7 +92,7 @@ class _CalculatorState extends State<Calculator> {
           'cos',
           'tan',
           '2^x',
-          '3^x'
+          '3^x',
           'asin',
           'acos',
           'atan',
@@ -168,10 +168,14 @@ class _CalculatorState extends State<Calculator> {
           numAfter = _numShow == '0' ? 'Error' : _equal('1', '/', _numShow);
           break;
         case 'x^2':
-          numAfter = _numShow == '0' ? '0' : _pow(double.parse(_numShow), 2).toString();
+          numAfter = _numShow == '0'
+              ? '0'
+              : _pow(double.parse(_numShow), 2).toString();
           break;
         case 'x^3':
-          numAfter = _numShow == '0' ? '0' : _pow(double.parse(_numShow), 3).toString();
+          numAfter = _numShow == '0'
+              ? '0'
+              : _pow(double.parse(_numShow), 3).toString();
           break;
         case 'e^x':
           numAfter = _pow(math.e, double.parse(_numShow)).toString();
@@ -533,7 +537,7 @@ class _CalculatorState extends State<Calculator> {
             str.substring(strLen - 6, strLen - 3) +
             ',' +
             str.substring(strLen - 3, strLen);
-      } else if (strLen > 12 && strLen < 15) {
+      } else if (strLen > 12 && strLen < 16) {
         return str.substring(0, strLen - 12) +
             ',' +
             str.substring(strLen - 12, strLen - 9) +
@@ -543,7 +547,7 @@ class _CalculatorState extends State<Calculator> {
             str.substring(strLen - 6, strLen - 3) +
             ',' +
             str.substring(strLen - 3, strLen);
-      }  else if (strLen > 15 && strLen < 18) {
+      } else if (strLen > 15 && strLen < 18) {
         return str.substring(0, strLen - 15) +
             ',' +
             str.substring(strLen - 15, strLen - 12) +
@@ -718,7 +722,6 @@ class _CalculatorState extends State<Calculator> {
                                     height: buttonHeight,
                                     direction: direction,
                                   ),
-
                                 ],
                               ),
                               Row(
@@ -764,7 +767,6 @@ class _CalculatorState extends State<Calculator> {
                                     height: buttonHeight,
                                     direction: direction,
                                   ),
-
                                 ],
                               ),
                               Row(
