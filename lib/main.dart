@@ -1,4 +1,4 @@
-import 'dart:math';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'dart:core';
 import 'button.dart';
@@ -24,6 +24,7 @@ class _CalculatorState extends State<Calculator> {
   var _list = <String>['0'];
   String _numShow = '0';
   String prevBtn = '';
+  var secondActive = false;
 
   void input(arg) {
     final lastIndex = _list.length - 1;
@@ -33,8 +34,42 @@ class _CalculatorState extends State<Calculator> {
 
     print(' ');
     print('------------------------------------------');
-    if (_list[lastIndex] == '0' &&
-        !['C', 'AC', '.', '+', '-', 'x', '/', '+/-', '=', '%'].contains(arg)) {
+    if (arg == '2nd') {
+      setState(() {
+        secondActive = !secondActive;
+      });
+    } else if (_list[lastIndex] == '0' &&
+        ![
+          'C',
+          'AC',
+          '.',
+          '+',
+          '-',
+          'x',
+          '/',
+          '+/-',
+          '=',
+          '%',
+          'x!',
+          '1/x',
+          'x^2',
+          'e^x',
+          '2√x',
+          'y√x',
+          'x^y',
+          '10^x',
+          'ln',
+          'lg',
+          'sin',
+          'cos',
+          'tan',
+          '2^x',
+          'asin',
+          'acos',
+          'atan',
+          'e',
+          'π'
+        ].contains(arg)) {
       numAfter = arg;
       storageList[lastIndex] = numAfter;
       setState(() {
@@ -68,12 +103,78 @@ class _CalculatorState extends State<Calculator> {
           _numShow = arg;
         });
       }
-    } else if (arg == '%' || arg == '+/-') {
+    } else if ([
+      '%',
+      '+/-',
+      'x!',
+      '1/x',
+      'x^2',
+      'e^x',
+      '2√x',
+      '10^x',
+      'ln',
+      'lg',
+      'sin',
+      'cos',
+      'tan',
+      '2^x',
+      'asin',
+      'acos',
+      'atan'
+    ].contains(arg)) {
       // 点击就计算
-      if (arg == '%') {
-        numAfter = _numShow == '0' ? '0' : _equal(_numShow, '/', '100');
-      } else if (arg == '+/-') {
-        numAfter = _numShow == '0' ? '0' : _equal(_numShow, 'x', '-1');
+      switch (arg) {
+        case '%':
+          numAfter = _numShow == '0' ? '0' : _equal(_numShow, '/', '100');
+          break;
+        case '+/-':
+          numAfter = _numShow == '0' ? '0' : _equal(_numShow, 'x', '-1');
+          break;
+        case 'x!':
+          numAfter = _factorial(int.parse(_numShow));
+          break;
+        case '1/x':
+          numAfter = _numShow == '0' ? 'Error' : _equal('1', '/', _numShow);
+          break;
+        case 'x^2':
+          numAfter = _numShow == '0' ? '0' : _equal(_numShow, 'x', _numShow);
+          break;
+        case 'e^x':
+          numAfter = _pow(math.e, double.parse(_numShow)).toString();
+          break;
+        case '2√x':
+          numAfter = _sqrt2(double.parse(_numShow)).toString();
+          break;
+        case '10^x':
+          numAfter = _pow(10, double.parse(_numShow)).toString();
+          break;
+        case '2^x':
+          numAfter = _pow(2, double.parse(_numShow)).toString();
+          break;
+        case 'ln':
+          numAfter = _ln(double.parse(_numShow)).toString();
+          break;
+        case 'lg':
+          numAfter = _lg(double.parse(_numShow)).toString();
+          break;
+        case 'sin':
+          numAfter = _sin(double.parse(_numShow)).toString();
+          break;
+        case 'asin':
+          numAfter = _asin(double.parse(_numShow)).toString();
+          break;
+        case 'cos':
+          numAfter = _cos(double.parse(_numShow)).toString();
+          break;
+        case 'acos':
+          numAfter = _acos(double.parse(_numShow)).toString();
+          break;
+        case 'tan':
+          numAfter = _tan(double.parse(_numShow)).toString();
+          break;
+        case 'atan':
+          numAfter = _atan(double.parse(_numShow)).toString();
+          break;
       }
       storageList[prevBtn == '' ? lastIndex : lastIndex - 1] = numAfter;
       setState(() {
@@ -95,8 +196,9 @@ class _CalculatorState extends State<Calculator> {
           prevBtn = '';
         });
       }
-    } else if (['+', '-', 'x', '/'].contains(arg)) {
+    } else if (['+', '-', 'x', '/', 'x^y', 'y√x'].contains(arg)) {
       if (prevBtn != '' || storageList[lastIndex] == '=') {
+        print(111);
         // 之前按过符号
         storageList[lastIndex] = arg;
         setState(() {
@@ -105,15 +207,19 @@ class _CalculatorState extends State<Calculator> {
         });
       } else {
         if (listLen == 3) {
-          // 先算乘除后算加减
-          if ((arg == 'x' || arg == '/') &&
-              (storageList[1] == '+' || storageList[1] == '-')) {
+          // 先算高级运算
+          if ((['x', '/', 'x^y', 'y√x'].contains(arg) &&
+                  ['+', '-',].contains(storageList[1])) ||
+              (['x^y', 'y√x'].contains(arg) &&
+                  ['+', '-', 'x', '/'].contains(storageList[1]))) {
+            print(222);
             storageList.add(arg);
             setState(() {
               _list = storageList;
               prevBtn = arg;
             });
           } else {
+            print(333);
             numAfter = _equal(storageList[0], storageList[1], storageList[2]);
             storageList.removeRange(0, 2);
             storageList = [numAfter, arg];
@@ -125,6 +231,7 @@ class _CalculatorState extends State<Calculator> {
           }
         } else if (listLen == 5) {
           if (arg == 'x' || arg == '/') {
+            print(444);
             numAfter = _equal(storageList[2], storageList[3], storageList[4]);
             storageList = [storageList[0], storageList[1], numAfter, arg];
             setState(() {
@@ -132,11 +239,50 @@ class _CalculatorState extends State<Calculator> {
               _numShow = numAfter;
               prevBtn = arg;
             });
-          } else {
+          } else if (arg == '+' || arg == '-') {
+            print(555);
             numAfter = _equal(storageList[0], storageList[1],
                 _equal(storageList[2], storageList[3], storageList[4]));
-            storageList.removeRange(0, 4);
-            storageList[0] = numAfter;
+            storageList = [numAfter, arg];
+            setState(() {
+              _list = storageList;
+              _numShow = numAfter;
+              prevBtn = arg;
+            });
+          } else {
+            print(666);
+            numAfter = arg;
+            storageList.add(numAfter);
+            setState(() {
+              _list = storageList;
+              _numShow = numAfter;
+              prevBtn = arg;
+            });
+          }
+        } else if (listLen == 7) {
+          if (arg == 'x^y' || arg == 'y√x') {
+            print(777);
+            numAfter = _equal(storageList[4], storageList[5], storageList[6]);
+            storageList = [
+              storageList[0],
+              storageList[1],
+              storageList[2],
+              storageList[3],
+              numAfter,
+              arg
+            ];
+            setState(() {
+              _list = storageList;
+              _numShow = numAfter;
+              prevBtn = arg;
+            });
+          } else {
+            print(888);
+            numAfter = _equal(
+                storageList[0],
+                storageList[1],
+                _equal(storageList[2], storageList[3],
+                    _equal(storageList[4], storageList[5], storageList[6])));
             storageList = [numAfter, arg];
             setState(() {
               _list = storageList;
@@ -145,6 +291,7 @@ class _CalculatorState extends State<Calculator> {
             });
           }
         } else {
+          print(999);
           storageList.add(arg);
           setState(() {
             _list = storageList;
@@ -171,13 +318,43 @@ class _CalculatorState extends State<Calculator> {
           _numShow = numAfter;
           prevBtn = '';
         });
+      } else if (listLen == 7) {
+        numAfter = _equal(
+            storageList[0],
+            storageList[1],
+            _equal(storageList[2], storageList[3],
+                _equal(storageList[4], storageList[5], storageList[6])));
+        storageList = [numAfter, arg];
+        setState(() {
+          _list = storageList;
+          _numShow = numAfter;
+          prevBtn = arg;
+        });
       } else {
         setState(() {
           _list = storageList;
           prevBtn = '';
         });
       }
+    } else if (['e', 'π'].contains(arg)) {
+      if (arg == 'e') {
+        numAfter = math.e.toString();
+      }
+      if (arg == 'π') {
+        numAfter = math.pi.toString();
+      }
+      if (prevBtn == '') {
+        storageList[lastIndex] = numAfter;
+      } else {
+        storageList.add(numAfter);
+      }
+      setState(() {
+        _list = storageList;
+        _numShow = numAfter;
+        prevBtn = '';
+      });
     } else {
+      print(666);
       // 普通数字
       // 超位数
       if (storageList[lastIndex].replaceAll('.', '').length >= 9) return;
@@ -208,17 +385,47 @@ class _CalculatorState extends State<Calculator> {
     print(_list);
   }
 
-  // 加
   _add(num1, num2) => num1 + num2;
 
-  // 减
   _minus(num1, num2) => num1 - num2;
 
-  // 乘
   _mult(num1, num2) => num1 * num2;
 
-  // 除
   _division(num1, num2) => num1 / num2;
+
+  _sin(num) => math.sin(num * (math.pi / 180));
+
+  _asin(num) => math.asin(1) * 180 / math.pi;
+
+  _cos(num) => math.cos(num * (math.pi / 180));
+
+  _acos(num) => math.acos(num) * 180 / math.pi;
+
+  _tan(num) => math.tan(num * (math.pi / 180));
+
+  _atan(num) => math.atan(num) * 180 / math.pi;
+
+  _sqrt2(num) => math.sqrt(num);
+
+  _sqrt(num1, num2) => math.pow(num1, 1 / num2);
+
+  _pow(num1, num2) => math.pow(num1, num2);
+
+  _ln(num) => math.log(num);
+
+  _lg(num) => math.log(num) / math.ln10;
+
+  _factorial(num) {
+    if (num is int) {
+      int sum = 1;
+      for (var i = 1; i <= num; i++) {
+        sum *= i;
+      }
+      return sum < 0 ? 'Error' : sum.toString();
+    } else {
+      return 'Error';
+    }
+  }
 
   // 字符串转数字
   _str2num(num) => num.contains('.') || num.contains('e')
@@ -235,12 +442,13 @@ class _CalculatorState extends State<Calculator> {
       '-': _minus(_num1, _num2),
       'x': _mult(_num1, _num2),
       '/': _division(_num1, _num2),
+      'x^y': _pow(_num1, _num2),
+      'y√x': _sqrt(_num1, _num2),
       '': _num2,
     };
     final num = obj[symbol];
     // 判断是否为无穷
     if (num.isInfinite) return 'Error';
-
     // 超范围
     var numStr = num.toString();
     final numStrLen = numStr.length;
@@ -298,6 +506,7 @@ class _CalculatorState extends State<Calculator> {
 
   @override
   Widget build(BuildContext context) {
+    // 设置边界大小
     final media = MediaQuery.of(context);
     final mediaPadding = media.padding;
     final size = media.size;
@@ -389,7 +598,9 @@ class _CalculatorState extends State<Calculator> {
                                   Button(
                                     arg: '2nd',
                                     textColor: Colors.white,
-                                    bacColor: Colors.white12,
+                                    bacColor: secondActive
+                                        ? Colors.white70
+                                        : Colors.white12,
                                     onPress: input,
                                     width: buttonWidth,
                                     height: buttonHeight,
@@ -414,7 +625,7 @@ class _CalculatorState extends State<Calculator> {
                                     direction: direction,
                                   ),
                                   Button(
-                                    arg: 'e^y',
+                                    arg: 'e^x',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
                                     onPress: input,
@@ -436,7 +647,7 @@ class _CalculatorState extends State<Calculator> {
                                     direction: direction,
                                   ),
                                   Button(
-                                    arg: 'x^-2',
+                                    arg: '2√x',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
                                     onPress: input,
@@ -445,7 +656,7 @@ class _CalculatorState extends State<Calculator> {
                                     direction: direction,
                                   ),
                                   Button(
-                                    arg: 'x^-y',
+                                    arg: 'y√x',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
                                     onPress: input,
@@ -454,7 +665,7 @@ class _CalculatorState extends State<Calculator> {
                                     direction: direction,
                                   ),
                                   Button(
-                                    arg: '10^x',
+                                    arg: secondActive ? '2^x' : '10^x',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
                                     onPress: input,
@@ -507,7 +718,7 @@ class _CalculatorState extends State<Calculator> {
                               Row(
                                 children: <Widget>[
                                   Button(
-                                    arg: 'sin',
+                                    arg: secondActive ? 'asin' : 'sin',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
                                     onPress: input,
@@ -516,7 +727,7 @@ class _CalculatorState extends State<Calculator> {
                                     direction: direction,
                                   ),
                                   Button(
-                                    arg: 'cos',
+                                    arg: secondActive ? 'acos' : 'cos',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
                                     onPress: input,
@@ -525,7 +736,7 @@ class _CalculatorState extends State<Calculator> {
                                     direction: direction,
                                   ),
                                   Button(
-                                    arg: 'tan',
+                                    arg: secondActive ? 'atan' : 'tan',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
                                     onPress: input,
