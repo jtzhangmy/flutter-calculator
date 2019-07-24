@@ -82,6 +82,7 @@ class _CalculatorState extends State<Calculator> {
           'x^2',
           'e^x',
           '2√x',
+          '3√x',
           'y√x',
           'x^y',
           '10^x',
@@ -91,6 +92,7 @@ class _CalculatorState extends State<Calculator> {
           'cos',
           'tan',
           '2^x',
+          '3^x'
           'asin',
           'acos',
           'atan',
@@ -136,8 +138,10 @@ class _CalculatorState extends State<Calculator> {
       'x!',
       '1/x',
       'x^2',
+      'x^3',
       'e^x',
       '2√x',
+      '3√x',
       '10^x',
       'ln',
       'lg',
@@ -164,13 +168,19 @@ class _CalculatorState extends State<Calculator> {
           numAfter = _numShow == '0' ? 'Error' : _equal('1', '/', _numShow);
           break;
         case 'x^2':
-          numAfter = _numShow == '0' ? '0' : _equal(_numShow, 'x', _numShow);
+          numAfter = _numShow == '0' ? '0' : _pow(double.parse(_numShow), 2).toString();
+          break;
+        case 'x^3':
+          numAfter = _numShow == '0' ? '0' : _pow(double.parse(_numShow), 3).toString();
           break;
         case 'e^x':
           numAfter = _pow(math.e, double.parse(_numShow)).toString();
           break;
         case '2√x':
           numAfter = _sqrt2(double.parse(_numShow)).toString();
+          break;
+        case '3√x':
+          numAfter = _sqrt(double.parse(_numShow), 3).toString();
           break;
         case '10^x':
           numAfter = _pow(10, double.parse(_numShow)).toString();
@@ -624,26 +634,6 @@ class _CalculatorState extends State<Calculator> {
                               Row(
                                 children: <Widget>[
                                   Button(
-                                    arg: '(',
-                                    textColor: Colors.white,
-                                    bacColor: Colors.white12,
-                                    tapColor: Colors.white24,
-                                    onPress: input,
-                                    width: buttonWidth,
-                                    height: buttonHeight,
-                                    direction: direction,
-                                  ),
-                                  Button(
-                                    arg: ')',
-                                    textColor: Colors.white,
-                                    bacColor: Colors.white12,
-                                    tapColor: Colors.white24,
-                                    onPress: input,
-                                    width: buttonWidth,
-                                    height: buttonHeight,
-                                    direction: direction,
-                                  ),
-                                  Button(
                                     arg: 'x!',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
@@ -662,7 +652,27 @@ class _CalculatorState extends State<Calculator> {
                                     width: buttonWidth,
                                     height: buttonHeight,
                                     direction: direction,
-                                  )
+                                  ),
+                                  Button(
+                                    arg: 'e^x',
+                                    textColor: Colors.white,
+                                    bacColor: Colors.white12,
+                                    tapColor: Colors.white24,
+                                    onPress: input,
+                                    width: buttonWidth,
+                                    height: buttonHeight,
+                                    direction: direction,
+                                  ),
+                                  Button(
+                                    arg: secondActive ? '2^x' : '10^x',
+                                    textColor: Colors.white,
+                                    bacColor: Colors.white12,
+                                    tapColor: Colors.white24,
+                                    onPress: input,
+                                    width: buttonWidth,
+                                    height: buttonHeight,
+                                    direction: direction,
+                                  ),
                                 ],
                               ),
                               Row(
@@ -689,7 +699,7 @@ class _CalculatorState extends State<Calculator> {
                                     direction: direction,
                                   ),
                                   Button(
-                                    arg: 'x^y',
+                                    arg: 'x^3',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
                                     tapColor: Colors.white24,
@@ -699,7 +709,7 @@ class _CalculatorState extends State<Calculator> {
                                     direction: direction,
                                   ),
                                   Button(
-                                    arg: 'e^x',
+                                    arg: 'x^y',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
                                     tapColor: Colors.white24,
@@ -708,6 +718,7 @@ class _CalculatorState extends State<Calculator> {
                                     height: buttonHeight,
                                     direction: direction,
                                   ),
+
                                 ],
                               ),
                               Row(
@@ -734,7 +745,7 @@ class _CalculatorState extends State<Calculator> {
                                     direction: direction,
                                   ),
                                   Button(
-                                    arg: 'y√x',
+                                    arg: '3√x',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
                                     tapColor: Colors.white24,
@@ -744,7 +755,7 @@ class _CalculatorState extends State<Calculator> {
                                     direction: direction,
                                   ),
                                   Button(
-                                    arg: secondActive ? '2^x' : '10^x',
+                                    arg: 'y√x',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
                                     tapColor: Colors.white24,
@@ -753,6 +764,7 @@ class _CalculatorState extends State<Calculator> {
                                     height: buttonHeight,
                                     direction: direction,
                                   ),
+
                                 ],
                               ),
                               Row(
