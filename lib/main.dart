@@ -40,7 +40,7 @@ class _CalculatorState extends State<Calculator> {
       setState(() {
         secondActive = !secondActive;
       });
-    } else if (arg == 'save'){
+    } else if (arg == 'save') {
       setState(() {
         _saveData = _numShow;
         _isSaved = true;
@@ -179,10 +179,12 @@ class _CalculatorState extends State<Calculator> {
           numAfter = _pow(2, double.parse(_numShow)).toString();
           break;
         case 'ln':
-          numAfter = _ln(double.parse(_numShow)).toString();
+          String result = _ln(double.parse(_numShow)).toString();
+          numAfter = result.contains('Infinity') ? 'Error' : result;
           break;
         case 'lg':
-          numAfter = _lg(double.parse(_numShow)).toString();
+          String result = _lg(double.parse(_numShow)).toString();
+          numAfter = result.contains('Infinity') ? 'Error' : result;
           break;
         case 'sin':
           numAfter = _sin(double.parse(_numShow)).toString();
@@ -495,6 +497,8 @@ class _CalculatorState extends State<Calculator> {
     final strLen = str.length;
     if (str.contains('e') || str.contains('Error')) {
       return str;
+    } else if (str.contains('Infinity')) {
+      return str;
     } else if (str.contains('.')) {
       final indexPoint = str.indexOf('.');
       print(str.substring(0, str.indexOf('.')));
@@ -524,6 +528,19 @@ class _CalculatorState extends State<Calculator> {
 
   _symbolTextColor(arg) => prevBtn == arg ? Colors.white : Colors.orange;
 
+  bool isTap0 = false;
+  onTapUp0() {
+    setState(() {
+      isTap0 = false;
+    });
+  }
+
+  onTapDown0() {
+    setState(() {
+      isTap0 = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // 设置边界大小
@@ -538,11 +555,11 @@ class _CalculatorState extends State<Calculator> {
     double height = size.height - topPadding - bottomPadding;
     final direction = height > width ? 'column' : 'row';
     double buttonWidth =
-        direction == 'column' ? (width - 20) / 4 - 20 : (width - 20) / 8 - 10;
+        direction == 'column' ? width / 4 - 20 : width / 8 - 10;
     double buttonHeight =
         direction == 'column' ? buttonWidth : (height - 40 - 50) / 5 - 20;
     double buttonZeroWidth =
-        direction == 'column' ? (width - 20) / 2 - 20 : (width - 20) / 4 - 10;
+        direction == 'column' ? width / 2 - 20 : width / 4 - 10;
 
     return Scaffold(
       body: Container(
@@ -579,6 +596,7 @@ class _CalculatorState extends State<Calculator> {
                                     arg: '(',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
+                                    tapColor: Colors.white24,
                                     onPress: input,
                                     width: buttonWidth,
                                     height: buttonHeight,
@@ -588,6 +606,7 @@ class _CalculatorState extends State<Calculator> {
                                     arg: ')',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
+                                    tapColor: Colors.white24,
                                     onPress: input,
                                     width: buttonWidth,
                                     height: buttonHeight,
@@ -597,6 +616,7 @@ class _CalculatorState extends State<Calculator> {
                                     arg: 'x!',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
+                                    tapColor: Colors.white24,
                                     onPress: input,
                                     width: buttonWidth,
                                     height: buttonHeight,
@@ -606,6 +626,7 @@ class _CalculatorState extends State<Calculator> {
                                     arg: '1/x',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
+                                    tapColor: Colors.white24,
                                     onPress: input,
                                     width: buttonWidth,
                                     height: buttonHeight,
@@ -630,6 +651,7 @@ class _CalculatorState extends State<Calculator> {
                                     arg: 'x^2',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
+                                    tapColor: Colors.white24,
                                     onPress: input,
                                     width: buttonWidth,
                                     height: buttonHeight,
@@ -639,6 +661,7 @@ class _CalculatorState extends State<Calculator> {
                                     arg: 'x^y',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
+                                    tapColor: Colors.white24,
                                     onPress: input,
                                     width: buttonWidth,
                                     height: buttonHeight,
@@ -648,6 +671,7 @@ class _CalculatorState extends State<Calculator> {
                                     arg: 'e^x',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
+                                    tapColor: Colors.white24,
                                     onPress: input,
                                     width: buttonWidth,
                                     height: buttonHeight,
@@ -660,7 +684,9 @@ class _CalculatorState extends State<Calculator> {
                                   Button(
                                     arg: 'save',
                                     textColor: Colors.white,
-                                    bacColor: _isSaved ? Colors.white24 : Colors.white12,
+                                    bacColor: _isSaved
+                                        ? Colors.white24
+                                        : Colors.white12,
                                     onPress: input,
                                     width: buttonWidth,
                                     height: buttonHeight,
@@ -670,6 +696,7 @@ class _CalculatorState extends State<Calculator> {
                                     arg: '2√x',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
+                                    tapColor: Colors.white24,
                                     onPress: input,
                                     width: buttonWidth,
                                     height: buttonHeight,
@@ -679,6 +706,7 @@ class _CalculatorState extends State<Calculator> {
                                     arg: 'y√x',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
+                                    tapColor: Colors.white24,
                                     onPress: input,
                                     width: buttonWidth,
                                     height: buttonHeight,
@@ -688,6 +716,7 @@ class _CalculatorState extends State<Calculator> {
                                     arg: secondActive ? '2^x' : '10^x',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
+                                    tapColor: Colors.white24,
                                     onPress: input,
                                     width: buttonWidth,
                                     height: buttonHeight,
@@ -701,6 +730,7 @@ class _CalculatorState extends State<Calculator> {
                                     arg: 'load',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
+                                    tapColor: Colors.white24,
                                     onPress: input,
                                     width: buttonWidth,
                                     height: buttonHeight,
@@ -710,6 +740,7 @@ class _CalculatorState extends State<Calculator> {
                                     arg: 'ln',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
+                                    tapColor: Colors.white24,
                                     onPress: input,
                                     width: buttonWidth,
                                     height: buttonHeight,
@@ -719,6 +750,7 @@ class _CalculatorState extends State<Calculator> {
                                     arg: 'lg',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
+                                    tapColor: Colors.white24,
                                     onPress: input,
                                     width: buttonWidth,
                                     height: buttonHeight,
@@ -728,6 +760,7 @@ class _CalculatorState extends State<Calculator> {
                                     arg: 'e',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
+                                    tapColor: Colors.white24,
                                     onPress: input,
                                     width: buttonWidth,
                                     height: buttonHeight,
@@ -741,6 +774,7 @@ class _CalculatorState extends State<Calculator> {
                                     arg: secondActive ? 'asin' : 'sin',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
+                                    tapColor: Colors.white24,
                                     onPress: input,
                                     width: buttonWidth,
                                     height: buttonHeight,
@@ -750,6 +784,7 @@ class _CalculatorState extends State<Calculator> {
                                     arg: secondActive ? 'acos' : 'cos',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
+                                    tapColor: Colors.white24,
                                     onPress: input,
                                     width: buttonWidth,
                                     height: buttonHeight,
@@ -759,6 +794,7 @@ class _CalculatorState extends State<Calculator> {
                                     arg: secondActive ? 'atan' : 'tan',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
+                                    tapColor: Colors.white24,
                                     onPress: input,
                                     width: buttonWidth,
                                     height: buttonHeight,
@@ -768,6 +804,7 @@ class _CalculatorState extends State<Calculator> {
                                     arg: 'π',
                                     textColor: Colors.white,
                                     bacColor: Colors.white12,
+                                    tapColor: Colors.white24,
                                     onPress: input,
                                     width: buttonWidth,
                                     height: buttonHeight,
@@ -826,6 +863,7 @@ class _CalculatorState extends State<Calculator> {
                               arg: '7',
                               textColor: Colors.white,
                               bacColor: Colors.white24,
+                              tapColor: Colors.white30,
                               onPress: input,
                               width: buttonWidth,
                               height: buttonHeight,
@@ -835,6 +873,7 @@ class _CalculatorState extends State<Calculator> {
                               arg: '8',
                               textColor: Colors.white,
                               bacColor: Colors.white24,
+                              tapColor: Colors.white30,
                               onPress: input,
                               width: buttonWidth,
                               height: buttonHeight,
@@ -844,6 +883,7 @@ class _CalculatorState extends State<Calculator> {
                               arg: '9',
                               textColor: Colors.white,
                               bacColor: Colors.white24,
+                              tapColor: Colors.white30,
                               onPress: input,
                               width: buttonWidth,
                               height: buttonHeight,
@@ -866,6 +906,7 @@ class _CalculatorState extends State<Calculator> {
                               arg: '4',
                               textColor: Colors.white,
                               bacColor: Colors.white24,
+                              tapColor: Colors.white30,
                               onPress: input,
                               width: buttonWidth,
                               height: buttonHeight,
@@ -875,6 +916,7 @@ class _CalculatorState extends State<Calculator> {
                               arg: '5',
                               textColor: Colors.white,
                               bacColor: Colors.white24,
+                              tapColor: Colors.white30,
                               onPress: input,
                               width: buttonWidth,
                               height: buttonHeight,
@@ -884,6 +926,7 @@ class _CalculatorState extends State<Calculator> {
                               arg: '6',
                               textColor: Colors.white,
                               bacColor: Colors.white24,
+                              tapColor: Colors.white30,
                               onPress: input,
                               width: buttonWidth,
                               height: buttonHeight,
@@ -906,6 +949,7 @@ class _CalculatorState extends State<Calculator> {
                               arg: '1',
                               textColor: Colors.white,
                               bacColor: Colors.white24,
+                              tapColor: Colors.white30,
                               onPress: input,
                               width: buttonWidth,
                               height: buttonHeight,
@@ -915,6 +959,7 @@ class _CalculatorState extends State<Calculator> {
                               arg: '2',
                               textColor: Colors.white,
                               bacColor: Colors.white24,
+                              tapColor: Colors.white30,
                               onPress: input,
                               width: buttonWidth,
                               height: buttonHeight,
@@ -924,6 +969,7 @@ class _CalculatorState extends State<Calculator> {
                               arg: '3',
                               textColor: Colors.white,
                               bacColor: Colors.white24,
+                              tapColor: Colors.white30,
                               onPress: input,
                               width: buttonWidth,
                               height: buttonHeight,
@@ -965,18 +1011,22 @@ class _CalculatorState extends State<Calculator> {
                                 margin: EdgeInsets.all(
                                     direction == 'column' ? 10 : 5),
                                 decoration: BoxDecoration(
-                                  color: Colors.white24,
+                                  color:
+                                      isTap0 ? Colors.white30 : Colors.white24,
                                   borderRadius: BorderRadius.all(
                                     const Radius.circular(50),
                                   ),
                                 ),
                               ),
                               onTap: () => input('0'),
+                              onTapUp: (detail) => onTapUp0(),
+                              onTapDown: (detail) => onTapDown0(),
                             ),
                             Button(
                               arg: '.',
                               textColor: Colors.white,
                               bacColor: Colors.white24,
+                              tapColor: Colors.white30,
                               onPress: input,
                               width: buttonWidth,
                               height: buttonHeight,

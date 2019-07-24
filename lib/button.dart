@@ -10,6 +10,7 @@ class Button extends StatefulWidget {
     @required this.width,
     @required this.height,
     @required this.direction,
+    @required this.tapColor,
   });
   final String arg;
   final Color textColor;
@@ -18,12 +19,26 @@ class Button extends StatefulWidget {
   final double width;
   final double height;
   final String direction;
+  final Color tapColor;
 
   @override
   State<StatefulWidget> createState() => ButtonState();
 }
 
 class ButtonState extends State<Button> {
+  bool tap = false;
+  onTapDown() {
+    setState(() {
+      tap = true;
+    });
+  }
+
+  onTapUp() {
+    setState(() {
+      tap = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return new GestureDetector(
@@ -37,9 +52,13 @@ class ButtonState extends State<Button> {
         margin: EdgeInsets.all(widget.direction == 'column' ? 10 : 5),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.all(const Radius.circular(40)),
-            color: widget.bacColor),
+            color: widget.tapColor == null
+                ? widget.bacColor
+                : tap ? widget.tapColor : widget.bacColor),
       ),
       onTap: () => widget.onPress(widget.arg),
+      onTapDown: (detail) => onTapDown(),
+      onTapUp: (detail) => onTapUp(),
     );
   }
 }
