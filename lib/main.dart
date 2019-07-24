@@ -198,7 +198,6 @@ class _CalculatorState extends State<Calculator> {
       }
     } else if (['+', '-', 'x', '/', 'x^y', 'y√x'].contains(arg)) {
       if (prevBtn != '' || storageList[lastIndex] == '=') {
-        print(111);
         // 之前按过符号
         storageList[lastIndex] = arg;
         setState(() {
@@ -215,14 +214,12 @@ class _CalculatorState extends State<Calculator> {
                   ].contains(storageList[1])) ||
               (['x^y', 'y√x'].contains(arg) &&
                   ['+', '-', 'x', '/'].contains(storageList[1]))) {
-            print(222);
             storageList.add(arg);
             setState(() {
               _list = storageList;
               prevBtn = arg;
             });
           } else {
-            print(333);
             numAfter = _equal(storageList[0], storageList[1], storageList[2]);
             storageList = [numAfter, arg];
             setState(() {
@@ -242,7 +239,9 @@ class _CalculatorState extends State<Calculator> {
               prevBtn = arg;
             });
           } else if ((['x^y', 'y√x'].contains(arg) &&
-              ['+', '-', 'x', '/'].contains(storageList[1])) || (['x', '/'].contains(arg) && ['+', '-'].contains(storageList[1]))) {
+                  ['+', '-', 'x', '/'].contains(storageList[1])) ||
+              (['x', '/'].contains(arg) &&
+                  ['+', '-'].contains(storageList[1]))) {
             print('---算后不算前---');
             numAfter = _equal(storageList[2], storageList[3], storageList[4]);
             storageList = [storageList[0], storageList[1], numAfter, arg];
@@ -269,7 +268,7 @@ class _CalculatorState extends State<Calculator> {
           }
         } else if (listLen == 7) {
           if (arg == 'x^y' || arg == 'y√x') {
-            print(777);
+            print('--- 算最后一位 ---');
             numAfter = _equal(storageList[4], storageList[5], storageList[6]);
             storageList = [
               storageList[0],
@@ -279,27 +278,26 @@ class _CalculatorState extends State<Calculator> {
               numAfter,
               arg
             ];
-            setState(() {
-              _list = storageList;
-              _numShow = numAfter;
-              prevBtn = arg;
-            });
+          } else if (['x', '/'].contains(arg)) {
+            print('---算最后2位---');
+            numAfter = _equal(storageList[2], storageList[3],
+                _equal(storageList[4], storageList[5], storageList[6]));
+            storageList = [storageList[0], storageList[1], numAfter, arg];
           } else {
-            print(888);
+            print('---全算---');
             numAfter = _equal(
                 storageList[0],
                 storageList[1],
                 _equal(storageList[2], storageList[3],
                     _equal(storageList[4], storageList[5], storageList[6])));
             storageList = [numAfter, arg];
-            setState(() {
-              _list = storageList;
-              _numShow = numAfter;
-              prevBtn = arg;
-            });
           }
+          setState(() {
+            _list = storageList;
+            _numShow = numAfter;
+            prevBtn = arg;
+          });
         } else {
-          print(999);
           storageList.add(arg);
           setState(() {
             _list = storageList;
@@ -310,40 +308,28 @@ class _CalculatorState extends State<Calculator> {
     } else if (arg == '=') {
       // 等于号
       if (listLen == 3) {
+        print('---3位---');
         numAfter = _equal(storageList[0], storageList[1], storageList[2]);
         storageList = [numAfter, arg];
-        setState(() {
-          _list = storageList;
-          _numShow = numAfter;
-          prevBtn = '';
-        });
       } else if (listLen == 5) {
+        print('---5位---');
         numAfter = _equal(storageList[0], storageList[1],
             _equal(storageList[2], storageList[3], storageList[4]));
         storageList = [numAfter, arg];
-        setState(() {
-          _list = storageList;
-          _numShow = numAfter;
-          prevBtn = '';
-        });
       } else if (listLen == 7) {
+        print('---7位---');
         numAfter = _equal(
             storageList[0],
             storageList[1],
             _equal(storageList[2], storageList[3],
                 _equal(storageList[4], storageList[5], storageList[6])));
         storageList = [numAfter, arg];
-        setState(() {
-          _list = storageList;
-          _numShow = numAfter;
-          prevBtn = arg;
-        });
-      } else {
-        setState(() {
-          _list = storageList;
-          prevBtn = '';
-        });
       }
+      setState(() {
+        _list = storageList;
+        _numShow = numAfter;
+        prevBtn = '';
+      });
     } else if (['e', 'π'].contains(arg)) {
       if (arg == 'e') {
         numAfter = math.e.toString();
@@ -362,7 +348,6 @@ class _CalculatorState extends State<Calculator> {
         prevBtn = '';
       });
     } else {
-      print(666);
       // 普通数字
       // 超位数
       if (storageList[lastIndex].replaceAll('.', '').length >= 9) return;
