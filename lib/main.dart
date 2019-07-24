@@ -515,6 +515,36 @@ class _CalculatorState extends State<Calculator> {
             str.substring(strLen - 6, strLen - 3) +
             ',' +
             str.substring(strLen - 3, strLen);
+      } else if (strLen > 9 && strLen < 13) {
+        return str.substring(0, strLen - 9) +
+            ',' +
+            str.substring(strLen - 9, strLen - 6) +
+            ',' +
+            str.substring(strLen - 6, strLen - 3) +
+            ',' +
+            str.substring(strLen - 3, strLen);
+      } else if (strLen > 12 && strLen < 15) {
+        return str.substring(0, strLen - 12) +
+            ',' +
+            str.substring(strLen - 12, strLen - 9) +
+            ',' +
+            str.substring(strLen - 9, strLen - 6) +
+            ',' +
+            str.substring(strLen - 6, strLen - 3) +
+            ',' +
+            str.substring(strLen - 3, strLen);
+      }  else if (strLen > 15 && strLen < 18) {
+        return str.substring(0, strLen - 15) +
+            ',' +
+            str.substring(strLen - 15, strLen - 12) +
+            ',' +
+            str.substring(strLen - 12, strLen - 9) +
+            ',' +
+            str.substring(strLen - 9, strLen - 6) +
+            ',' +
+            str.substring(strLen - 6, strLen - 3) +
+            ',' +
+            str.substring(strLen - 3, strLen);
       } else {
         return str;
       }
@@ -528,6 +558,7 @@ class _CalculatorState extends State<Calculator> {
 
   _symbolTextColor(arg) => prevBtn == arg ? Colors.white : Colors.orange;
 
+  // 0选中状态
   bool isTap0 = false;
   onTapUp0() {
     setState(() {
@@ -823,6 +854,7 @@ class _CalculatorState extends State<Calculator> {
                               arg: _numShow == '0' ? 'AC' : 'C',
                               textColor: Colors.white,
                               bacColor: Colors.white54,
+                              tapColor: Colors.white70,
                               onPress: input,
                               width: buttonWidth,
                               height: buttonHeight,
@@ -832,6 +864,7 @@ class _CalculatorState extends State<Calculator> {
                               arg: '+/-',
                               textColor: Colors.white,
                               bacColor: Colors.white54,
+                              tapColor: Colors.white70,
                               onPress: input,
                               width: buttonWidth,
                               height: buttonHeight,
@@ -841,6 +874,7 @@ class _CalculatorState extends State<Calculator> {
                               arg: '%',
                               textColor: Colors.white,
                               bacColor: Colors.white54,
+                              tapColor: Colors.white70,
                               onPress: input,
                               width: buttonWidth,
                               height: buttonHeight,
