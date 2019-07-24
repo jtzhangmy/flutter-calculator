@@ -209,7 +209,10 @@ class _CalculatorState extends State<Calculator> {
         if (listLen == 3) {
           // 先算高级运算
           if ((['x', '/', 'x^y', 'y√x'].contains(arg) &&
-                  ['+', '-',].contains(storageList[1])) ||
+                  [
+                    '+',
+                    '-',
+                  ].contains(storageList[1])) ||
               (['x^y', 'y√x'].contains(arg) &&
                   ['+', '-', 'x', '/'].contains(storageList[1]))) {
             print(222);
@@ -221,7 +224,6 @@ class _CalculatorState extends State<Calculator> {
           } else {
             print(333);
             numAfter = _equal(storageList[0], storageList[1], storageList[2]);
-            storageList.removeRange(0, 2);
             storageList = [numAfter, arg];
             setState(() {
               _list = storageList;
@@ -230,8 +232,18 @@ class _CalculatorState extends State<Calculator> {
             });
           }
         } else if (listLen == 5) {
-          if (arg == 'x' || arg == '/') {
-            print(444);
+          // 不算
+          if (['x^y', 'y√x'].contains(arg) &&
+              ['x', '/'].contains(storageList[3])) {
+            print('---不算---');
+            storageList.add(arg);
+            setState(() {
+              _list = storageList;
+              prevBtn = arg;
+            });
+          } else if ((['x^y', 'y√x'].contains(arg) &&
+              ['+', '-', 'x', '/'].contains(storageList[1])) || (['x', '/'].contains(arg) && ['+', '-'].contains(storageList[1]))) {
+            print('---算后不算前---');
             numAfter = _equal(storageList[2], storageList[3], storageList[4]);
             storageList = [storageList[0], storageList[1], numAfter, arg];
             setState(() {
@@ -239,20 +251,16 @@ class _CalculatorState extends State<Calculator> {
               _numShow = numAfter;
               prevBtn = arg;
             });
-          } else if (arg == '+' || arg == '-') {
-            print(555);
+          } else if ([
+                '+',
+                '-',
+              ].contains(arg) ||
+              (['x', '/'].contains(arg) &&
+                  ['x', '/'].contains(storageList[1]))) {
+            print('---全算---');
             numAfter = _equal(storageList[0], storageList[1],
                 _equal(storageList[2], storageList[3], storageList[4]));
             storageList = [numAfter, arg];
-            setState(() {
-              _list = storageList;
-              _numShow = numAfter;
-              prevBtn = arg;
-            });
-          } else {
-            print(666);
-            numAfter = arg;
-            storageList.add(numAfter);
             setState(() {
               _list = storageList;
               _numShow = numAfter;
