@@ -388,7 +388,7 @@ class _CalculatorState extends State<Calculator> {
       if (arg == 'π') {
         numAfter = math.pi.toString();
       }
-      if (prevBtn == '') {
+      if (prevBtn == '' || prevBtn == '=') {
         storageList[lastIndex] = numAfter;
       } else {
         storageList.add(numAfter);
