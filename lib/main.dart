@@ -80,6 +80,7 @@ class _CalculatorState extends State<Calculator> {
           'x!',
           '1/x',
           'x^2',
+          'x^3',
           'e^x',
           '2√x',
           '3√x',
@@ -125,7 +126,7 @@ class _CalculatorState extends State<Calculator> {
         _numShow = '0';
         prevBtn = '';
       });
-    } else if (_numShow == 'Error') {
+    } else if (_numShow == 'Error' || _numShow == 'NaN') {
       if (['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].contains(arg)) {
         setState(() {
           _list = [arg];
@@ -162,7 +163,7 @@ class _CalculatorState extends State<Calculator> {
           numAfter = _equal(_numShow, 'x', '-1');
           break;
         case 'x!':
-          numAfter = _factorial(int.parse(_numShow));
+          numAfter = _factorial(_numShow);
           break;
         case '1/x':
           numAfter = _numShow == '0' ? 'Error' : _equal('1', '/', _numShow);
@@ -177,10 +178,12 @@ class _CalculatorState extends State<Calculator> {
           numAfter = _pow(math.e, double.parse(_numShow)).toString();
           break;
         case '2√x':
-          numAfter = _sqrt2(double.parse(_numShow)).toString();
+          String result = _sqrt2(double.parse(_numShow)).toString();
+          numAfter = result.contains('NaN') ? 'Error' : result;
           break;
         case '3√x':
-          numAfter = _sqrt(double.parse(_numShow), 3).toString();
+          String result = _sqrt(double.parse(_numShow), 3).toString();
+          numAfter = result.contains('NaN') ? 'Error' : result;
           break;
         case '10^x':
           numAfter = _pow(10, double.parse(_numShow)).toString();
@@ -190,11 +193,15 @@ class _CalculatorState extends State<Calculator> {
           break;
         case 'ln':
           String result = _ln(double.parse(_numShow)).toString();
-          numAfter = result.contains('Infinity') ? 'Error' : result;
+          numAfter = result.contains('Infinity') || result.contains('NaN')
+              ? 'Error'
+              : result;
           break;
         case 'lg':
           String result = _lg(double.parse(_numShow)).toString();
-          numAfter = result.contains('Infinity') ? 'Error' : result;
+          numAfter = result.contains('Infinity') || result.contains('NaN')
+              ? 'Error'
+              : result;
           break;
         case 'sin':
           numAfter = _sin(double.parse(_numShow)).toString();
@@ -216,14 +223,15 @@ class _CalculatorState extends State<Calculator> {
           break;
       }
       numAfter = _filter0(numAfter);
-      storageList[prevBtn == '' ? lastIndex : lastIndex - 1] = numAfter;
+      storageList[prevBtn == '' || prevBtn == '=' ? lastIndex : lastIndex - 1] =
+          numAfter;
       setState(() {
         _list = storageList;
         _numShow = numAfter;
       });
     } else if (arg == '.') {
       if (!_numShow.contains('.')) {
-        if (prevBtn == '') {
+        if (prevBtn == '' && prevBtn != '=') {
           numAfter = _numShow + arg;
           storageList[lastIndex] = numAfter;
         } else {
@@ -237,7 +245,7 @@ class _CalculatorState extends State<Calculator> {
         });
       }
     } else if (['+', '-', 'x', '/', 'x^y', 'y√x'].contains(arg)) {
-      if (prevBtn != '' || storageList[lastIndex] == '=') {
+      if (prevBtn != '' && prevBtn != '=') {
         // 之前按过符号
         storageList[lastIndex] = arg;
         setState(() {
@@ -350,12 +358,12 @@ class _CalculatorState extends State<Calculator> {
       if (listLen == 3) {
         print('---3位---');
         numAfter = _equal(storageList[0], storageList[1], storageList[2]);
-        storageList = [numAfter, arg];
+        storageList = [numAfter];
       } else if (listLen == 5) {
         print('---5位---');
         numAfter = _equal(storageList[0], storageList[1],
             _equal(storageList[2], storageList[3], storageList[4]));
-        storageList = [numAfter, arg];
+        storageList = [numAfter];
       } else if (listLen == 7) {
         print('---7位---');
         numAfter = _equal(
@@ -363,15 +371,15 @@ class _CalculatorState extends State<Calculator> {
             storageList[1],
             _equal(storageList[2], storageList[3],
                 _equal(storageList[4], storageList[5], storageList[6])));
-        storageList = [numAfter, arg];
+        storageList = [numAfter];
       } else {
         numAfter = storageList[0];
-        _list = [numAfter, arg];
+        _list = [numAfter];
       }
       setState(() {
         _list = storageList;
         _numShow = numAfter;
-        prevBtn = '';
+        prevBtn = '=';
       });
     } else if (['e', 'π'].contains(arg)) {
       if (arg == 'e') {
@@ -395,7 +403,7 @@ class _CalculatorState extends State<Calculator> {
       // 超位数
       if (storageList[lastIndex].replaceAll('.', '').length >= 9) return;
       // 前一个点击+-x/符号
-      if (prevBtn != '') {
+      if (['+', '-', 'x', '/', 'x^y', 'y√x'].contains(prevBtn)) {
         numAfter = arg;
         storageList.add(arg);
         setState(() {
@@ -404,7 +412,7 @@ class _CalculatorState extends State<Calculator> {
           prevBtn = '';
         });
       } else {
-        if (storageList[lastIndex] == '=') {
+        if (prevBtn == '=') {
           numAfter = arg;
           storageList = [arg];
         } else {
@@ -452,9 +460,10 @@ class _CalculatorState extends State<Calculator> {
   _lg(num) => math.log(num) / math.ln10;
 
   _factorial(num) {
-    if (num is int) {
+    if (!num.contains('.') && !num.contains('-') && !num.contains('e')) {
       int sum = 1;
-      for (var i = 1; i <= num; i++) {
+      int numInt = int.parse(num);
+      for (var i = 1; i <= numInt; i++) {
         sum *= i;
       }
       return sum < 0 ? 'Error' : sum.toString();
@@ -483,10 +492,11 @@ class _CalculatorState extends State<Calculator> {
       '': _num2,
     };
     final num = obj[symbol];
+    var numStr = num.toString();
     // 判断是否为无穷
     if (num.isInfinite) return 'Error';
-    // 超范围
-    var numStr = num.toString();
+    // 处理NaN
+    if (numStr == 'NaN') return 'Error';
     return _filter0(numStr);
   }
 
@@ -508,12 +518,15 @@ class _CalculatorState extends State<Calculator> {
     final strLen = str.length;
     if (str.contains('e') ||
         str.contains('Error') ||
-        str.contains('Infinity')) {
+        str.contains('Infinity') ||
+        str.contains('NaN')) {
       return str;
     } else if (str.contains('.')) {
       final indexPoint = str.indexOf('.');
       return _splitStr(str.substring(0, indexPoint)) +
           str.substring(indexPoint, strLen);
+    } else if (str.contains('-')) {
+      return '-' + _splitStr(str.substring(1, strLen));
     } else {
       String numStr = '';
       for (int i = 0; i < strLen; i++) {
@@ -527,10 +540,16 @@ class _CalculatorState extends State<Calculator> {
 
   // 保留小数
   String _significantNum(String str, String direction) {
-    return str.length > (direction == 'column' ? 11 : 18)
-        ? _filter0(double.parse(str)
-            .toStringAsPrecision(direction == 'column' ? 8 : 18))
-        : str;
+    if (str.length > (direction == 'column' ? 9 : 14)) {
+      final indexPoint = str.indexOf('.');
+      if (indexPoint > -1 && str.substring(0, indexPoint) == '0') {
+        return _filter0(double.parse(str).toStringAsFixed(direction == 'column' ? 8 : 14));
+      } else {
+        return _filter0(double.parse(str).toStringAsPrecision(direction == 'column' ? 8 : 14));
+      }
+    } else {
+      return str;
+    }
   }
 
   // 转换e
