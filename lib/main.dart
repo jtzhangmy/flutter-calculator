@@ -156,26 +156,23 @@ class _CalculatorState extends State<Calculator> {
       // 点击就计算
       switch (arg) {
         case '%':
-          numAfter = _numShow == '0' ? '0' : _equal(_numShow, '/', '100');
+          numAfter =_equal(_numShow, '/', '100');
           break;
         case '+/-':
-          numAfter = _numShow == '0' ? '0' : _equal(_numShow, 'x', '-1');
+          numAfter =_equal(_numShow, 'x', '-1');
           break;
         case 'x!':
           numAfter = _factorial(int.parse(_numShow));
           break;
         case '1/x':
-          numAfter = _numShow == '0' ? 'Error' : _equal('1', '/', _numShow);
+          numAfter =
+              _numShow == '0' ? 'Error' : _equal('1', '/', _numShow);
           break;
         case 'x^2':
-          numAfter = _numShow == '0'
-              ? '0'
-              : _pow(double.parse(_numShow), 2).toString();
+          numAfter = _pow(double.parse(_numShow), 2).toString();
           break;
         case 'x^3':
-          numAfter = _numShow == '0'
-              ? '0'
-              : _pow(double.parse(_numShow), 3).toString();
+          numAfter = _pow(double.parse(_numShow), 3).toString();
           break;
         case 'e^x':
           numAfter = _pow(math.e, double.parse(_numShow)).toString();
@@ -219,6 +216,7 @@ class _CalculatorState extends State<Calculator> {
           numAfter = _atan(double.parse(_numShow)).toString();
           break;
       }
+      numAfter = _filter0(numAfter);
       storageList[prevBtn == '' ? lastIndex : lastIndex - 1] = numAfter;
       setState(() {
         _list = storageList;
@@ -367,6 +365,9 @@ class _CalculatorState extends State<Calculator> {
             _equal(storageList[2], storageList[3],
                 _equal(storageList[4], storageList[5], storageList[6])));
         storageList = [numAfter, arg];
+      } else {
+        numAfter = storageList[0];
+        _list = [numAfter, arg];
       }
       setState(() {
         _list = storageList;
@@ -491,77 +492,42 @@ class _CalculatorState extends State<Calculator> {
     if (numStrLen > 11) {
       numStr = num.toStringAsPrecision(8);
       // 末尾为0
-      RegExp finalZero = new RegExp(r"0*$");
-      // e前.后只有0
-      RegExp regPointZero = new RegExp(r"(\.0*?(?=e))");
-      // e前.数字后只有0
-      RegExp regPointNum = new RegExp(r"((?<=\..*)0*?(?=e))");
-      return finalZero.hasMatch(numStr) == true && !numStr.contains('e')
-          ? numStr.replaceAll(finalZero, '')
-          : regPointZero.hasMatch(numStr) == true
-              ? numStr.replaceAll(regPointZero, '')
-              : numStr.replaceAll(regPointNum, '');
+      return _filter0(numStr);
     } else {
       return numStr;
     }
   }
 
+  _filter0(numStr) {
+    RegExp finalZero = new RegExp(r"\.0*$");
+    // e前.后只有0
+    RegExp regPointZero = new RegExp(r"(\.0*?(?=e))");
+    // e前.数字后只有0
+    RegExp regPointNum = new RegExp(r"((?<=\..*)0*?(?=e))");
+    return finalZero.hasMatch(numStr) == true && !numStr.contains('e')
+        ? numStr.replaceAll(finalZero, '')
+        : regPointZero.hasMatch(numStr) == true
+            ? numStr.replaceAll(regPointZero, '')
+            : numStr.replaceAll(regPointNum, '');
+  }
+
   // 分隔符
   _splitStr(str) {
     final strLen = str.length;
-    if (str.contains('e') || str.contains('Error')) {
-      return str;
-    } else if (str.contains('Infinity')) {
+    if (str.contains('e') ||
+        str.contains('Error') ||
+        str.contains('Infinity')) {
       return str;
     } else if (str.contains('.')) {
       final indexPoint = str.indexOf('.');
-      print(str.substring(0, str.indexOf('.')));
       return _splitStr(str.substring(0, indexPoint)) +
           str.substring(indexPoint, strLen);
     } else {
-      if (strLen > 3 && strLen < 7) {
-        return str.substring(0, strLen - 3) +
-            ',' +
-            str.substring(strLen - 3, strLen);
-      } else if (strLen > 6 && strLen < 10) {
-        return str.substring(0, strLen - 6) +
-            ',' +
-            str.substring(strLen - 6, strLen - 3) +
-            ',' +
-            str.substring(strLen - 3, strLen);
-      } else if (strLen > 9 && strLen < 13) {
-        return str.substring(0, strLen - 9) +
-            ',' +
-            str.substring(strLen - 9, strLen - 6) +
-            ',' +
-            str.substring(strLen - 6, strLen - 3) +
-            ',' +
-            str.substring(strLen - 3, strLen);
-      } else if (strLen > 12 && strLen < 16) {
-        return str.substring(0, strLen - 12) +
-            ',' +
-            str.substring(strLen - 12, strLen - 9) +
-            ',' +
-            str.substring(strLen - 9, strLen - 6) +
-            ',' +
-            str.substring(strLen - 6, strLen - 3) +
-            ',' +
-            str.substring(strLen - 3, strLen);
-      } else if (strLen > 15 && strLen < 18) {
-        return str.substring(0, strLen - 15) +
-            ',' +
-            str.substring(strLen - 15, strLen - 12) +
-            ',' +
-            str.substring(strLen - 12, strLen - 9) +
-            ',' +
-            str.substring(strLen - 9, strLen - 6) +
-            ',' +
-            str.substring(strLen - 6, strLen - 3) +
-            ',' +
-            str.substring(strLen - 3, strLen);
-      } else {
-        return str;
+      String numStr = '';
+      for (int i = 0; i < strLen; i++) {
+        numStr += ((strLen - 1 - i) % 3 == 0 && i != strLen - 1) ?  '${str[i]},' : str[i];
       }
+      return numStr;
     }
   }
 
