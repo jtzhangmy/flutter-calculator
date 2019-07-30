@@ -156,17 +156,16 @@ class _CalculatorState extends State<Calculator> {
       // 点击就计算
       switch (arg) {
         case '%':
-          numAfter =_equal(_numShow, '/', '100');
+          numAfter = _equal(_numShow, '/', '100');
           break;
         case '+/-':
-          numAfter =_equal(_numShow, 'x', '-1');
+          numAfter = _equal(_numShow, 'x', '-1');
           break;
         case 'x!':
           numAfter = _factorial(int.parse(_numShow));
           break;
         case '1/x':
-          numAfter =
-              _numShow == '0' ? 'Error' : _equal('1', '/', _numShow);
+          numAfter = _numShow == '0' ? 'Error' : _equal('1', '/', _numShow);
           break;
         case 'x^2':
           numAfter = _pow(double.parse(_numShow), 2).toString();
@@ -488,17 +487,10 @@ class _CalculatorState extends State<Calculator> {
     if (num.isInfinite) return 'Error';
     // 超范围
     var numStr = num.toString();
-    final numStrLen = numStr.length;
-    if (numStrLen > 11) {
-      numStr = num.toStringAsPrecision(8);
-      // 末尾为0
-      return _filter0(numStr);
-    } else {
-      return numStr;
-    }
+    return _filter0(numStr);
   }
 
-  _filter0(numStr) {
+  String _filter0(String numStr) {
     RegExp finalZero = new RegExp(r"\.0*$");
     // e前.后只有0
     RegExp regPointZero = new RegExp(r"(\.0*?(?=e))");
@@ -512,7 +504,7 @@ class _CalculatorState extends State<Calculator> {
   }
 
   // 分隔符
-  _splitStr(str) {
+  String _splitStr(String str) {
     final strLen = str.length;
     if (str.contains('e') ||
         str.contains('Error') ||
@@ -525,10 +517,20 @@ class _CalculatorState extends State<Calculator> {
     } else {
       String numStr = '';
       for (int i = 0; i < strLen; i++) {
-        numStr += ((strLen - 1 - i) % 3 == 0 && i != strLen - 1) ?  '${str[i]},' : str[i];
+        numStr += ((strLen - 1 - i) % 3 == 0 && i != strLen - 1)
+            ? '${str[i]},'
+            : str[i];
       }
       return numStr;
     }
+  }
+
+  // 保留小数
+  String _significantNum(String str, String direction) {
+    return str.length > (direction == 'column' ? 11 : 18)
+        ? _filter0(double.parse(str)
+            .toStringAsPrecision(direction == 'column' ? 8 : 18))
+        : str;
   }
 
   // 转换e
@@ -580,7 +582,7 @@ class _CalculatorState extends State<Calculator> {
             Expanded(
               flex: 1,
               child: Container(
-                child: Text(_splitStr(_numShow),
+                child: Text(_splitStr(_significantNum(_numShow, direction)),
                     style: TextStyle(fontSize: 48, color: Colors.white),
                     textAlign: TextAlign.right),
                 width: width,
